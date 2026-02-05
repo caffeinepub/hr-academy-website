@@ -1,0 +1,146 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --radius: 0.5rem;
+        /* Pure black background */
+        --background: 0 0 0;
+        /* Pure white foreground */
+        --foreground: 1 0 0;
+        /* Dark gray card */
+        --card: 0.1 0 0;
+        --card-foreground: 1 0 0;
+        /* Dark gray popover */
+        --popover: 0.1 0 0;
+        --popover-foreground: 1 0 0;
+        /* Pure white primary */
+        --primary: 1 0 0;
+        --primary-foreground: 0 0 0;
+        /* Dark gray secondary */
+        --secondary: 0.15 0 0;
+        --secondary-foreground: 1 0 0;
+        /* Dark gray muted */
+        --muted: 0.15 0 0;
+        --muted-foreground: 0.6 0 0;
+        /* Dark gray accent */
+        --accent: 0.2 0 0;
+        --accent-foreground: 1 0 0;
+        /* Red destructive */
+        --destructive: 0.5 0.3 25;
+        --destructive-foreground: 1 0 0;
+        /* Gray border */
+        --border: 0.2 0 0;
+        --input: 0.2 0 0;
+        /* Red ring */
+        --ring: 0.5 0.3 25;
+        /* Red chart colors with varying lightness */
+        --chart-1: 0.5 0.3 25;
+        --chart-2: 0.4 0.25 25;
+        --chart-3: 0.6 0.28 25;
+        --chart-4: 0.45 0.26 25;
+        --chart-5: 0.55 0.29 25;
+        /* Primary red accent */
+        --accent-red: 0.5 0.3 25;
+        /* Light red variant */
+        --accent-red-light: 0.6 0.25 25;
+        /* Dark red variant */
+        --accent-red-dark: 0.4 0.3 25;
+    }
+
+    .dark {
+        --background: 0 0 0;
+        --foreground: 1 0 0;
+        --card: 0.1 0 0;
+        --card-foreground: 1 0 0;
+        --popover: 0.1 0 0;
+        --popover-foreground: 1 0 0;
+        --primary: 1 0 0;
+        --primary-foreground: 0 0 0;
+        --secondary: 0.15 0 0;
+        --secondary-foreground: 1 0 0;
+        --muted: 0.15 0 0;
+        --muted-foreground: 0.6 0 0;
+        --accent: 0.2 0 0;
+        --accent-foreground: 1 0 0;
+        --destructive: 0.5 0.3 25;
+        --destructive-foreground: 1 0 0;
+        --border: 0.2 0 0;
+        --input: 0.2 0 0;
+        --ring: 0.5 0.3 25;
+        --chart-1: 0.5 0.3 25;
+        --chart-2: 0.4 0.25 25;
+        --chart-3: 0.6 0.28 25;
+        --chart-4: 0.45 0.26 25;
+        --chart-5: 0.55 0.29 25;
+        --accent-red: 0.5 0.3 25;
+        --accent-red-light: 0.6 0.25 25;
+        --accent-red-dark: 0.4 0.3 25;
+    }
+
+    * {
+        @apply border-border;
+    }
+    
+    body {
+        @apply bg-background text-foreground;
+        font-feature-settings: "rlig" 1, "calt" 1;
+    }
+
+    .founder-name {
+        font-family: 'Playfair Display', serif;
+        font-style: italic;
+        font-weight: 400;
+    }
+}
+
+@layer utilities {
+    .text-accent-red {
+        color: oklch(var(--accent-red));
+    }
+    
+    .bg-accent-red {
+        background-color: oklch(var(--accent-red));
+    }
+    
+    .border-accent-red {
+        border-color: oklch(var(--accent-red));
+    }
+    
+    .hover\:bg-accent-red:hover {
+        background-color: oklch(var(--accent-red));
+    }
+    
+    .hover\:text-accent-red:hover {
+        color: oklch(var(--accent-red));
+    }
+    
+    .hover\:border-accent-red:hover {
+        border-color: oklch(var(--accent-red));
+    }
+
+    .text-accent-red-light {
+        color: oklch(var(--accent-red-light));
+    }
+    
+    .bg-accent-red-light {
+        background-color: oklch(var(--accent-red-light));
+    }
+    
+    .border-accent-red-light {
+        border-color: oklch(var(--accent-red-light));
+    }
+
+    .text-accent-red-dark {
+        color: oklch(var(--accent-red-dark));
+    }
+    
+    .bg-accent-red-dark {
+        background-color: oklch(var(--accent-red-dark));
+    }
+    
+    .border-accent-red-dark {
+        border-color: oklch(var(--accent-red-dark));
+    }
+}

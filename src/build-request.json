@@ -1,0 +1,129 @@
+{
+  "kind": "build_request",
+  "title": "Homepage hero text tweaks, remove Courses CTAs/links, and show+moderate submitted reviews (non-email changes)",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-10",
+      "text": "Update the Home page hero heading so that only the word “ACADEMY” in “HR ACADEMY” renders in red, while “HR” remains in the existing white styling.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4",
+          "msg-8"
+        ],
+        "quotes": [
+          "for the \"ACADEMY\" in \"HR ACADEMY\" above the trusted by parents line, change the colour of letters to red"
+        ]
+      },
+      "acceptanceCriteria": [
+        "On the Home page hero, the title reads “HR ACADEMY” with “ACADEMY” in the existing red theme color and “HR” not red",
+        "No other hero text color changes are introduced"
+      ]
+    },
+    {
+      "id": "REQ-11",
+      "text": "Remove all public UI options labeled “Explore Courses” and “Our Courses” from the site (including the Home page hero CTA button and the Footer Quick Links entry).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4",
+          "msg-8"
+        ],
+        "quotes": [
+          "remove the \"Our Courses\" and \"Explore courses\" options entirely"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The Home page hero no longer renders a button labeled “Explore Courses”",
+        "The Footer “Quick Links” section no longer includes a link labeled “Our Courses”"
+      ]
+    },
+    {
+      "id": "REQ-12",
+      "text": "Remove the “Courses” navigation item from the Header navigation (desktop and mobile) so visitors do not see a Courses option in the header.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4",
+          "msg-8"
+        ],
+        "quotes": [
+          "remove the \"Our Courses\" and \"Explore courses\" options entirely"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Header navigation does not display a “Courses” link on desktop",
+        "Header navigation does not display a “Courses” link in the mobile menu"
+      ]
+    },
+    {
+      "id": "REQ-13",
+      "text": "In the Footer, remove the standalone “ACADEMY” text displayed near the logo (above/near the Quick Links area) while keeping the logo image.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4",
+          "msg-8"
+        ],
+        "quotes": [
+          "above quick links near the logo remove the \"ACADEMY\""
+        ]
+      },
+      "acceptanceCriteria": [
+        "Footer shows the brand logo image but does not show the “ACADEMY” text near it",
+        "Header logo remains unchanged unless explicitly required by other requirements"
+      ]
+    },
+    {
+      "id": "REQ-14",
+      "text": "Make newly submitted text reviews display publicly on the Home page after submission (without requiring an admin login), and ensure the list updates immediately after a successful submit.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-4",
+          "msg-8"
+        ],
+        "quotes": [
+          "when someone enters a review make it show on the page"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Home page includes a visible section that lists submitted reviews (name or “Anonymous”, rating, and content)",
+        "After submitting a review via the Home page form, the new review appears in the public list without a page refresh",
+        "Anonymous submissions display as “Anonymous”"
+      ]
+    },
+    {
+      "id": "REQ-15",
+      "text": "Add an admin-only backend API to delete any submitted text review by ID, and add corresponding admin UI controls in the Admin Reviews tab to delete submitted reviews.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-4",
+          "msg-8"
+        ],
+        "quotes": [
+          "let the admin delete any if they like"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Backend exposes an admin-gated method to delete a submitted review by id (and rejects non-admin callers)",
+        "Admin Reviews tab shows a delete control for each submitted review entry",
+        "After deletion, the review no longer appears in the Admin submitted-reviews list",
+        "After deletion, the review no longer appears in the public Home page submitted-reviews list"
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not implement or claim email forwarding of Contact/Query submissions; email sending is not available in this environment."
+  ],
+  "nonGoals": [
+    "Forwarding Contact/Query form submissions to hracademy2305@gmail.com via email",
+    "Redesigning the Courses page or deleting the Courses route itself (only remove the specified UI entry points/links)"
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}

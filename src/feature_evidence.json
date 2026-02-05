@@ -1,0 +1,128 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-update-the-home-page-hero-heading-so-that-only-the-word-academy-in-hr-academy-renders-in-red-while-hr-remains-in-the-existing-white-styling",
+      "featureTitle": "Update the Home page hero heading so that only the word “ACADEMY” in “HR ACADEMY” renders in red, while “HR” remains in the existing white styling.",
+      "files": [
+        "frontend/src/pages/HomePage.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "blob-storage@4.0.0",
+        "authorization@4.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-10"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-remove-all-public-ui-options-labeled-explore-courses-and-our-courses-from-the-site-including-the-home-page-hero-cta-button-and-the-footer-quick-links-entry",
+      "featureTitle": "Remove all public UI options labeled “Explore Courses” and “Our Courses” from the site (including the Home page hero CTA button and the Footer Quick Links entry).",
+      "files": [
+        "frontend/src/components/Footer.tsx",
+        "frontend/src/pages/HomePage.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "blob-storage@4.0.0",
+        "authorization@4.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-11"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-remove-the-courses-navigation-item-from-the-header-navigation-desktop-and-mobile-so-visitors-do-not-see-a-courses-option-in-the-header",
+      "featureTitle": "Remove the “Courses” navigation item from the Header navigation (desktop and mobile) so visitors do not see a Courses option in the header.",
+      "files": [
+        "frontend/src/components/Header.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "blob-storage@4.0.0",
+        "authorization@4.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-12"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-in-the-footer-remove-the-standalone-academy-text-displayed-near-the-logo-above-near-the-quick-links-area-while-keeping-the-logo-image",
+      "featureTitle": "In the Footer, remove the standalone “ACADEMY” text displayed near the logo (above/near the Quick Links area) while keeping the logo image.",
+      "files": [
+        "frontend/src/components/Footer.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "blob-storage@4.0.0",
+        "authorization@4.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-13"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-make-newly-submitted-text-reviews-display-publicly-on-the-home-page-after-submission-without-requiring-an-admin-login-and-ensure-the-list-updates-immediately-after-a-successful-submit",
+      "featureTitle": "Make newly submitted text reviews display publicly on the Home page after submission (without requiring an admin login), and ensure the list updates immediately after a successful submit.",
+      "files": [
+        "frontend/src/hooks/useQueries.ts",
+        "frontend/src/pages/HomePage.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "blob-storage@4.0.0",
+        "authorization@4.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-14"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-an-admin-only-backend-api-to-delete-any-submitted-text-review-by-id-and-add-corresponding-admin-ui-controls-in-the-admin-reviews-tab-to-delete-submitted-reviews",
+      "featureTitle": "Add an admin-only backend API to delete any submitted text review by ID, and add corresponding admin UI controls in the Admin Reviews tab to delete submitted reviews.",
+      "files": [
+        "frontend/src/hooks/useQueries.ts",
+        "frontend/src/pages/AdminPage.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "blob-storage@4.0.0",
+        "authorization@4.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-15"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

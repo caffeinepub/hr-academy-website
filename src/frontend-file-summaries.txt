@@ -1,0 +1,18 @@
+{
+  "frontend/src/App.tsx": "Main application component with TanStack Router setup for multi-page navigation, wrapped only in ThemeProvider with Toaster, removing duplicate QueryClientProvider and InternetIdentityProvider that are already provided in main.tsx.",
+  "frontend/src/components/Layout.tsx": "Layout wrapper component that provides consistent header and footer across all pages with main content area.",
+  "frontend/src/components/Header.tsx": "Responsive navigation header with logo-only BrandLogo, removed \"Courses\" navigation item from both desktop and mobile menus, keeping Home, Gallery, and Contact links with red Contact Us button.",
+  "frontend/src/components/Footer.tsx": "Footer component with logo-only BrandLogo (no \"ACADEMY\" text), removed \"Our Courses\" link from Quick Links section, displaying founder name, contact information, and branch locations in red-white-black theme.",
+  "frontend/src/pages/HomePage.tsx": "Home page with hero section displaying \"HR\" in white and \"ACADEMY\" in red, removed \"Explore Courses\" CTA button, displays both review screenshots and submitted text reviews publicly, and includes review submission form with immediate display after submission.",
+  "frontend/src/pages/CoursesPage.tsx": "Courses page displaying categorized course listings for Intermediate and Competitive/Entrance exams only, with color-coded badges using red, white, and black color variants for strict brand adherence.",
+  "frontend/src/pages/GalleryPage.tsx": "Gallery page with Instagram-style photo grid layout showing academy images fetched from backend using ExternalBlob.getDirectURL() method, with hover captions and fallback to generated assets.",
+  "frontend/src/pages/ContactPage.tsx": "Contact page with international students section featuring WhatsApp consultation link, contact form, and general contact information cards displaying email, phone, Instagram, Facebook, and branch location details.",
+  "frontend/src/hooks/useQueries.ts": "Custom React Query hooks for all backend operations including new useGetSubmittedReviews for public review display, useDeleteReview for admin review deletion, with proper cache invalidation for both admin and public review queries.",
+  "frontend/src/index.css": "Global styles with OKLCH color system implementing strict red-white-black theme with red accent variants and custom founder-name class using Playfair Display italic font for elegant founder attribution.",
+  "frontend/tailwind.config.js": "Tailwind configuration extended with accent-red color tokens (default, light, dark) matching HR Academy's strict red-white-black branding requirements.",
+  "frontend/index.html": "HTML entry point with HR Academy favicon and preload hint updated to use the new canonical logo-3.jpeg, page title, and Playfair Display font import for decorative founder name styling.",
+  "frontend/src/pages/AdminPage.tsx": "Admin dashboard with tabs for managing courses, gallery, review screenshots and submitted reviews with delete functionality, contact information, and owner guide with full CRUD operations.",
+  "frontend/src/components/LoginButton.tsx": "Reusable login/logout button component using Internet Identity with proper authentication state handling and query cache clearing.",
+  "frontend/src/components/BrandLogo.tsx": "Shared brand logo component that displays the HR Academy logo image with \"ACADEMY\" text in red with normal font weight below it, using centralized path constant with enhanced reliability and safe error handling.",
+  "frontend/src/constants/brandAssets.ts": "Centralized constant for the HR Academy brand logo path pointing to the uploaded logo-3.jpeg file with explicit documentation that the underlying asset must not be modified."
+}
