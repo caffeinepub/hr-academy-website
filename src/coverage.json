@@ -1,104 +1,35 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-05T06:51:32.600Z",
+  "generatedAt": "2026-02-09T10:53:58.861Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 6,
-    "implemented": 6,
+    "total": 1,
+    "implemented": 1,
     "items": [
       {
         "id": "REQ-10",
-        "summary": "Update the Home page hero heading so that only the word “ACADEMY” in “HR ACADEMY” renders in red, while “HR” remains in the existing white styling.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/HomePage.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/HomePage.tsx"
-        ]
-      },
-      {
-        "id": "REQ-11",
-        "summary": "Remove all public UI options labeled “Explore Courses” and “Our Courses” from the site (including the Home page hero CTA button and the Footer Quick Links entry).",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/HomePage.tsx",
-          "frontend/src/components/Footer.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/HomePage.tsx",
-          "frontend/src/components/Footer.tsx"
-        ]
-      },
-      {
-        "id": "REQ-12",
-        "summary": "Remove the “Courses” navigation item from the Header navigation (desktop and mobile) so visitors do not see a Courses option in the header.",
+        "summary": "Remove the extra (third) \"Contact\" navigation option from the site header so visitors do not see multiple ways to navigate to the Contact page in the header UI. Keep a single, clear Contact call-to-action in the header (the existing \"Contact Us\" button) and ensure the desktop nav links and mobile sheet menu no longer include a separate \"Contact\" link that duplicates the button.",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/components/Header.tsx"
         ],
         "matchedFiles": [
           "frontend/src/components/Header.tsx"
-        ]
-      },
-      {
-        "id": "REQ-13",
-        "summary": "In the Footer, remove the standalone “ACADEMY” text displayed near the logo (above/near the Quick Links area) while keeping the logo image.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/Footer.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/Footer.tsx"
-        ]
-      },
-      {
-        "id": "REQ-14",
-        "summary": "Make newly submitted text reviews display publicly on the Home page after submission (without requiring an admin login), and ensure the list updates immediately after a successful submit.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/pages/HomePage.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/pages/HomePage.tsx"
-        ]
-      },
-      {
-        "id": "REQ-15",
-        "summary": "Add an admin-only backend API to delete any submitted text review by ID, and add corresponding admin UI controls in the Admin Reviews tab to delete submitted reviews.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/pages/AdminPage.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/pages/AdminPage.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
-    "backend/main.mo",
     "build-request.json",
+    "caffeine.lock.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
-    "frontend/src/components/Footer.tsx",
     "frontend/src/components/Header.tsx",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
-    "frontend/src/hooks/useQueries.ts",
-    "frontend/src/pages/AdminPage.tsx",
-    "frontend/src/pages/HomePage.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

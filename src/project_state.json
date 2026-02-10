@@ -1,7 +1,28 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 18,
+  "projectStateVersion": 22,
   "summary": "HR Academy is a full-stack Internet Computer (ICP) dapp consisting of a React single-page website (Home, Courses, Gallery, Contact, Admin) backed by a Motoko canister. The canister stores academy content (courses, gallery images, contact info), accepts public submissions (international inquiries and text reviews), and hosts a public gallery of admin-uploaded review screenshots. Administration is protected by Internet Identity authentication plus on-chain role-based access control (RBAC). Images are stored/served as ICP ExternalBlob values and rendered in the frontend via direct gateway URLs. The repository now also includes a reusable build-template (React + Motoko + shadcn/ui) plus image utility scripts to support repeatable builds/deploys and asset maintenance.",
+  "architectural_notes": [
+    "Frontend is a React SPA using TanStack Router for routing and @tanstack/react-query for data fetching, mutations, caching, and cache invalidation.",
+    "Backend access is via a generated canister actor; a custom useActor hook recreates the actor when identity changes (anonymous vs authenticated).",
+    "Authentication uses Internet Identity via @dfinity/auth-client, wrapped in an InternetIdentityProvider that restores sessions from storage and exposes login state flags.",
+    "Admin bootstrap uses a secret token passed via URL hash (caffeineAdminToken) and persisted in sessionStorage for the browser session; the actor calls _initializeAccessControlWithSecret on authenticated creation.",
+    "Motoko backend uses Map-based in-memory state for all entities (courses, images, contact info, inquiries, reviews, user profiles) with public read endpoints and admin-gated write/list endpoints.",
+    "RBAC is implemented via an AccessControl module plus a Motoko authorization mixin; admin bootstrap requires env var CAFFEINE_ADMIN_TOKEN and a user-provided secret.",
+    "Blob-storage functionality is mixed into the canister, exposing dead-blob discovery/pruning, blob liveness checks, gateway principal refresh, and cycles refill via a cashier principal.",
+    "Branding is centralized via a canonical logo path constant and a shared BrandLogo component used across Header/Footer/Home and for the favicon; styling uses Tailwind + shadcn/ui with OKLCH CSS-variable tokens.",
+    "Backend state (content maps, RBAC roles, user profiles, contact info) is persisted across upgrades using stable storage patterns and upgrade hooks rather than purely in-memory Maps.",
+    "Repository includes a build-template scaffold (frontend/backend configs, deploy tooling, baseline shadcn/ui set) plus scripts for resizing/pruning unused images to standardize builds and asset hygiene."
+  ],
+  "known_issues": [
+    "AdminPage computes showProfileSetup but does not render any profile setup UI even though backend supports saveCallerUserProfile.",
+    "Frontend invalidates ['internationalInquiries'] after submission, but there is no React Query hook/UI to fetch and display inquiries for admins despite backend support (getInternationalInquiries).",
+    "useActor invalidates and refetches nearly all queries on actor creation/change, which can cause unnecessary network chatter and UI churn on login/logout.",
+    "RBAC initialization depends on CAFFEINE_ADMIN_TOKEN being set; if missing, _initializeAccessControlWithSecret traps and authenticated flows can break.",
+    "Blob-storage authorized principals start empty; unless gateway principals are refreshed, blob deletion endpoints will always reject callers as unauthorized.",
+    "UI shows a duplicated/extra (3rd) \"Contact\" option in navigation/menu; should be removed."
+  ],
+  "isFixRequest": true,
   "existing_features": [
     {
       "id": "IF-1",
@@ -275,50 +296,10 @@
       "version": 1
     },
     {
-      "id": "feature-update-the-home-page-hero-heading-so-that-only-the-word-academy-in-hr-academy-renders-in-red-while-hr-remains-in-the-existing-white-styling",
-      "title": "Update the Home page hero heading so that only the word “ACADEMY” in “HR ACADEMY” renders in red, while “HR” remains in the existing white styling.",
+      "id": "feature-remove-the-extra-third-contact-navigation-option-from-the-site-header-so-visitors-do-not-see-multiple-ways-to-navigate-to-the-contact-page-in-the-header-ui-keep-a-single-clear-contact-call-to-action-in-the-header-the-existing-contact-us-button-and-ensure-the-desktop-nav-links-and-mobile-sheet-menu-no-longer-include-a-separate-contact-link-that-duplicates-the-button",
+      "title": "Remove the extra (third) \"Contact\" navigation option from the site header so visitors do not see multiple ways to navigate to the Contact page in the header UI. Keep a single, clear Contact call-to-action in the header (the existing \"Contact Us\" button) and ensure the desktop nav links and mobile sheet menu no longer include a separate \"Contact\" link that duplicates the button.",
       "reqIds": [
         "REQ-10"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-remove-all-public-ui-options-labeled-explore-courses-and-our-courses-from-the-site-including-the-home-page-hero-cta-button-and-the-footer-quick-links-entry",
-      "title": "Remove all public UI options labeled “Explore Courses” and “Our Courses” from the site (including the Home page hero CTA button and the Footer Quick Links entry).",
-      "reqIds": [
-        "REQ-11"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-remove-the-courses-navigation-item-from-the-header-navigation-desktop-and-mobile-so-visitors-do-not-see-a-courses-option-in-the-header",
-      "title": "Remove the “Courses” navigation item from the Header navigation (desktop and mobile) so visitors do not see a Courses option in the header.",
-      "reqIds": [
-        "REQ-12"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-in-the-footer-remove-the-standalone-academy-text-displayed-near-the-logo-above-near-the-quick-links-area-while-keeping-the-logo-image",
-      "title": "In the Footer, remove the standalone “ACADEMY” text displayed near the logo (above/near the Quick Links area) while keeping the logo image.",
-      "reqIds": [
-        "REQ-13"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-make-newly-submitted-text-reviews-display-publicly-on-the-home-page-after-submission-without-requiring-an-admin-login-and-ensure-the-list-updates-immediately-after-a-successful-submit",
-      "title": "Make newly submitted text reviews display publicly on the Home page after submission (without requiring an admin login), and ensure the list updates immediately after a successful submit.",
-      "reqIds": [
-        "REQ-14"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-an-admin-only-backend-api-to-delete-any-submitted-text-review-by-id-and-add-corresponding-admin-ui-controls-in-the-admin-reviews-tab-to-delete-submitted-reviews",
-      "title": "Add an admin-only backend API to delete any submitted text review by ID, and add corresponding admin UI controls in the Admin Reviews tab to delete submitted reviews.",
-      "reqIds": [
-        "REQ-15"
       ],
       "version": 1
     }
@@ -326,50 +307,11 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Homepage hero typography tweaks: set “ACADEMY” letters in the main “HR ACADEMY” heading to red; remove extra “ACADEMY” texts near the top-left/Quick Links and above the trusted-by line as requested.",
+      "summary": "Remove the 3rd duplicate \"Contact\" option (extra Contact link) from the UI navigation/menu",
       "reqIds": [],
       "status": "pending"
-    },
-    {
-      "id": "AR-2",
-      "summary": "Remove the “Our Courses” and “Explore courses” sections/options entirely from the public site UI.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-3",
-      "summary": "Make newly submitted reviews appear publicly on the page immediately after submission; add admin ability to delete any review.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-4",
-      "summary": "Forward Contact/Query form submissions to hracademy2305@gmail.com via email (blocked until platform email feature is enabled on the account/plan).",
-      "reqIds": [],
-      "status": "blocked"
     }
   ],
-  "architectural_notes": [
-    "Frontend is a React SPA using TanStack Router for routing and @tanstack/react-query for data fetching, mutations, caching, and cache invalidation.",
-    "Backend access is via a generated canister actor; a custom useActor hook recreates the actor when identity changes (anonymous vs authenticated).",
-    "Authentication uses Internet Identity via @dfinity/auth-client, wrapped in an InternetIdentityProvider that restores sessions from storage and exposes login state flags.",
-    "Admin bootstrap uses a secret token passed via URL hash (caffeineAdminToken) and persisted in sessionStorage for the browser session; the actor calls _initializeAccessControlWithSecret on authenticated creation.",
-    "Motoko backend uses Map-based in-memory state for all entities (courses, images, contact info, inquiries, reviews, user profiles) with public read endpoints and admin-gated write/list endpoints.",
-    "RBAC is implemented via an AccessControl module plus a Motoko authorization mixin; admin bootstrap requires env var CAFFEINE_ADMIN_TOKEN and a user-provided secret.",
-    "Blob-storage functionality is mixed into the canister, exposing dead-blob discovery/pruning, blob liveness checks, gateway principal refresh, and cycles refill via a cashier principal.",
-    "Branding is centralized via a canonical logo path constant and a shared BrandLogo component used across Header/Footer/Home and for the favicon; styling uses Tailwind + shadcn/ui with OKLCH CSS-variable tokens.",
-    "Backend state (content maps, RBAC roles, user profiles, contact info) is persisted across upgrades using stable storage patterns and upgrade hooks rather than purely in-memory Maps.",
-    "Repository includes a build-template scaffold (frontend/backend configs, deploy tooling, baseline shadcn/ui set) plus scripts for resizing/pruning unused images to standardize builds and asset hygiene."
-  ],
-  "known_issues": [
-    "AdminPage computes showProfileSetup but does not render any profile setup UI even though backend supports saveCallerUserProfile.",
-    "Frontend invalidates ['internationalInquiries'] after submission, but there is no React Query hook/UI to fetch and display inquiries for admins despite backend support (getInternationalInquiries).",
-    "useActor invalidates and refetches nearly all queries on actor creation/change, which can cause unnecessary network chatter and UI churn on login/logout.",
-    "RBAC initialization depends on CAFFEINE_ADMIN_TOKEN being set; if missing, _initializeAccessControlWithSecret traps and authenticated flows can break.",
-    "Blob-storage authorized principals start empty; unless gateway principals are refreshed, blob deletion endpoints will always reject callers as unauthorized.",
-    "Contact/query submission email forwarding requested but cannot be implemented until the account/platform email feature is enabled."
-  ],
-  "isFixRequest": false,
   "gameProjectType": "none",
   "projectName": "HR Academy",
   "clarification_mode": "instant",

@@ -1,113 +1,22 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Homepage hero CTA removals, footer/header course link removal, and public+admin submitted reviews UI",
+  "title": "Remove duplicate Contact link from header navigation",
   "requirements": [
     {
       "id": "REQ-10",
-      "summary": "Render only the word “ACADEMY” in the Home hero title in the red theme color while keeping “HR” in the existing white styling.",
+      "summary": "Remove the duplicate 'Contact' text link from both desktop nav links and the mobile sheet menu while keeping the existing 'Contact Us' header button as the sole header CTA to /contact.",
       "acceptanceCriteria": [
-        "On the Home page hero, the title reads “HR ACADEMY” with “ACADEMY” in the existing red theme color and “HR” not red",
-        "No other hero text color changes are introduced"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/HomePage.tsx",
-          "operation": "modify",
-          "description": "Adjust the hero <h1> rendering to split “HR” and “ACADEMY” and apply the existing red theme class only to “ACADEMY”, preserving the current typography for the rest of the hero."
-        }
-      ]
-    },
-    {
-      "id": "REQ-11",
-      "summary": "Remove all public UI options labeled “Explore Courses” and “Our Courses” (Home hero CTA and Footer Quick Links).",
-      "acceptanceCriteria": [
-        "The Home page hero no longer renders a button labeled “Explore Courses”",
-        "The Footer “Quick Links” section no longer includes a link labeled “Our Courses”"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/HomePage.tsx",
-          "operation": "modify",
-          "description": "Remove the hero CTA button labeled “Explore Courses” and its navigation behavior while keeping the rest of the hero CTAs intact. Use existing shadcn-ui Button patterns where applicable; verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/Footer.tsx",
-          "operation": "modify",
-          "description": "Remove the Footer Quick Links entry labeled “Our Courses” (the /courses link) while keeping the remainder of the Quick Links section intact."
-        }
-      ]
-    },
-    {
-      "id": "REQ-12",
-      "summary": "Remove the “Courses” navigation item from the Header navigation (desktop and mobile).",
-      "acceptanceCriteria": [
-        "Header navigation does not display a “Courses” link on desktop",
-        "Header navigation does not display a “Courses” link in the mobile menu"
+        "On desktop header, there is no separate text nav link labeled \"Contact\" if the \"Contact Us\" button is present.",
+        "On mobile header, the slide-out menu does not list a separate \"Contact\" link if the \"Contact Us\" button is present.",
+        "Navigating to /contact is still possible via the remaining header contact call-to-action.",
+        "No other header navigation items are removed or renamed."
       ],
       "file_operations": [
         {
           "path": "frontend/src/components/Header.tsx",
           "operation": "modify",
-          "description": "Update the Header navItems configuration to remove the “Courses” item so it no longer appears in either the desktop nav or the mobile sheet menu. Use existing shadcn-ui Sheet patterns where applicable; verify the component's usage instructions before implementing."
-        }
-      ]
-    },
-    {
-      "id": "REQ-13",
-      "summary": "Remove the standalone “ACADEMY” text near the Footer logo while keeping the logo image.",
-      "acceptanceCriteria": [
-        "Footer shows the brand logo image but does not show the “ACADEMY” text near it",
-        "Header logo remains unchanged unless explicitly required by other requirements"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/Footer.tsx",
-          "operation": "modify",
-          "description": "Render the Footer BrandLogo without the text label (hide “ACADEMY”) while keeping the logo image and existing layout/spacing."
-        }
-      ]
-    },
-    {
-      "id": "REQ-14",
-      "summary": "Display newly submitted text reviews publicly on the Home page immediately after submission (no admin login required).",
-      "acceptanceCriteria": [
-        "Home page includes a visible section that lists submitted reviews (name or “Anonymous”, rating, and content)",
-        "After submitting a review via the Home page form, the new review appears in the public list without a page refresh",
-        "Anonymous submissions display as “Anonymous”"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Add a public reviews query hook that fetches submitted reviews without requiring authentication, and update the existing submit-review mutation to refresh (invalidate/update) the public list immediately after a successful submit. Keep React Query keys consistent between the Home page list and post-submit refresh."
-        },
-        {
-          "path": "frontend/src/pages/HomePage.tsx",
-          "operation": "modify",
-          "description": "Add a visible public list section for submitted text reviews (displaying name or “Anonymous”, rating, and content) and wire it to the new public reviews query hook. Ensure the list updates immediately after submit via React Query invalidation/cache update, without requiring a page refresh. Use existing shadcn-ui Card/Button styling patterns where applicable; verify the component's usage instructions before implementing."
-        }
-      ]
-    },
-    {
-      "id": "REQ-15",
-      "summary": "Add admin UI controls in the Admin Reviews tab to delete submitted text reviews by ID and keep public/admin lists in sync after deletion.",
-      "acceptanceCriteria": [
-        "Backend exposes an admin-gated method to delete a submitted review by id (and rejects non-admin callers)",
-        "Admin Reviews tab shows a delete control for each submitted review entry",
-        "After deletion, the review no longer appears in the Admin submitted-reviews list",
-        "After deletion, the review no longer appears in the public Home page submitted-reviews list"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Add a delete-submitted-review mutation hook that calls the existing backend delete review capability and, on success, invalidates both the admin submitted-reviews query and the public submitted-reviews query so the deleted entry disappears everywhere."
-        },
-        {
-          "path": "frontend/src/pages/AdminPage.tsx",
-          "operation": "modify",
-          "description": "In the Admin Reviews tab 'Submitted Reviews' list, add a delete control per review entry that triggers the delete-submitted-review mutation (with a confirmation prompt) and updates the list immediately after success. Use existing shadcn-ui Button and icon patterns for destructive actions; verify the component's usage instructions before implementing."
+          "description": "Update the shared header navItems list to remove the '/contact' item labeled 'Contact' so it no longer renders in the desktop link list or the mobile sheet menu, while preserving the existing 'Contact Us' button link to '/contact'. Ensure no other nav items are changed, and do not modify any files under frontend/src/components/ui."
         }
       ]
     }
