@@ -1,305 +1,27 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 22,
-  "summary": "HR Academy is a full-stack Internet Computer (ICP) dapp consisting of a React single-page website (Home, Courses, Gallery, Contact, Admin) backed by a Motoko canister. The canister stores academy content (courses, gallery images, contact info), accepts public submissions (international inquiries and text reviews), and hosts a public gallery of admin-uploaded review screenshots. Administration is protected by Internet Identity authentication plus on-chain role-based access control (RBAC). Images are stored/served as ICP ExternalBlob values and rendered in the frontend via direct gateway URLs. The repository now also includes a reusable build-template (React + Motoko + shadcn/ui) plus image utility scripts to support repeatable builds/deploys and asset maintenance.",
+  "projectStateVersion": 3,
+  "summary": "New project",
   "architectural_notes": [
-    "Frontend is a React SPA using TanStack Router for routing and @tanstack/react-query for data fetching, mutations, caching, and cache invalidation.",
-    "Backend access is via a generated canister actor; a custom useActor hook recreates the actor when identity changes (anonymous vs authenticated).",
-    "Authentication uses Internet Identity via @dfinity/auth-client, wrapped in an InternetIdentityProvider that restores sessions from storage and exposes login state flags.",
-    "Admin bootstrap uses a secret token passed via URL hash (caffeineAdminToken) and persisted in sessionStorage for the browser session; the actor calls _initializeAccessControlWithSecret on authenticated creation.",
-    "Motoko backend uses Map-based in-memory state for all entities (courses, images, contact info, inquiries, reviews, user profiles) with public read endpoints and admin-gated write/list endpoints.",
-    "RBAC is implemented via an AccessControl module plus a Motoko authorization mixin; admin bootstrap requires env var CAFFEINE_ADMIN_TOKEN and a user-provided secret.",
-    "Blob-storage functionality is mixed into the canister, exposing dead-blob discovery/pruning, blob liveness checks, gateway principal refresh, and cycles refill via a cashier principal.",
-    "Branding is centralized via a canonical logo path constant and a shared BrandLogo component used across Header/Footer/Home and for the favicon; styling uses Tailwind + shadcn/ui with OKLCH CSS-variable tokens.",
-    "Backend state (content maps, RBAC roles, user profiles, contact info) is persisted across upgrades using stable storage patterns and upgrade hooks rather than purely in-memory Maps.",
-    "Repository includes a build-template scaffold (frontend/backend configs, deploy tooling, baseline shadcn/ui set) plus scripts for resizing/pruning unused images to standardize builds and asset hygiene."
+    "Treat the user-provided photo as immutable; do not crop, resize, filter, compress, or otherwise alter it."
   ],
-  "known_issues": [
-    "AdminPage computes showProfileSetup but does not render any profile setup UI even though backend supports saveCallerUserProfile.",
-    "Frontend invalidates ['internationalInquiries'] after submission, but there is no React Query hook/UI to fetch and display inquiries for admins despite backend support (getInternationalInquiries).",
-    "useActor invalidates and refetches nearly all queries on actor creation/change, which can cause unnecessary network chatter and UI churn on login/logout.",
-    "RBAC initialization depends on CAFFEINE_ADMIN_TOKEN being set; if missing, _initializeAccessControlWithSecret traps and authenticated flows can break.",
-    "Blob-storage authorized principals start empty; unless gateway principals are refreshed, blob deletion endpoints will always reject callers as unauthorized.",
-    "UI shows a duplicated/extra (3rd) \"Contact\" option in navigation/menu; should be removed."
-  ],
-  "isFixRequest": true,
+  "known_issues": [],
+  "isFixRequest": false,
+  "imageRequirements": "## Required Images\n- Wide group photo on an outdoor sports field (hr-academy-1-2-uploaded.dim_1280x360.jpeg)",
   "existing_features": [
     {
-      "id": "IF-1",
-      "title": "Multi-page public website (SPA) with shared layout",
-      "synonyms": [
-        "Marketing site",
-        "Public routes"
-      ],
-      "description": "Provides Home, Courses, Gallery, Contact, and Admin routes using TanStack Router, rendered inside a shared Layout with a sticky Header and a Footer.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-2",
-      "title": "Dark-first red/white/black theme using Tailwind + OKLCH tokens",
-      "synonyms": [
-        "Design system",
-        "Theme tokens"
-      ],
-      "description": "Implements a strict brand palette via CSS variables and Tailwind configuration (including accent-red variants) and uses shadcn/ui components for consistent UI styling.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-3",
-      "title": "Canonical brand logo asset used across the site and favicon",
-      "synonyms": [
-        "BrandLogo",
-        "Centralized logo path"
-      ],
-      "description": "Centralizes the logo path in BRAND_LOGO_PATH (\"/assets/HR Academy logo-3.jpeg\"), renders it via BrandLogo with eager/high-priority loading and error fallback, and uses the same image for the favicon/preload in index.html.",
+      "id": "feature-add-the-uploaded-image-file-hr-academy-1-2-jpeg-to-the-frontend-static-assets-at-frontend-public-assets-generated-and-ensure-it-is-stored-and-served-exactly-as-provided-no-resizing-recompression-cropping-filters-metadata-stripping-format-conversion-or-other-modifications",
+      "title": "Add the uploaded image file \"HR Academy 1-2.jpeg\" to the frontend static assets at frontend/public/assets/generated/ and ensure it is stored and served exactly as provided (no resizing, recompression, cropping, filters, metadata stripping, format conversion, or other modifications).",
       "reqIds": [
-        "REQ-7"
+        "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "IF-4",
-      "title": "Responsive header navigation with prominent Contact Us action",
-      "synonyms": [
-        "Header nav",
-        "Mobile sheet menu"
-      ],
-      "description": "Header includes BrandLogo, nav links (Home/Courses/Gallery/Contact), a red “Contact Us” button (desktop + mobile), and a mobile Sheet drawer navigation.",
+      "id": "feature-update-the-home-page-mission-section-our-mission-on-the-route-to-display-the-uploaded-photo-exactly-as-is-using-a-direct-img-src-assets-generated-reference-to-the-copied-static-asset-and-remove-any-styling-that-visually-alters-the-image-including-but-not-limited-to-rounded-corners-clipping-overlays-opacity-css-filters-or-object-fit-cropping",
+      "title": "Update the Home page Mission section (\"Our Mission\" on the / route) to display the uploaded photo exactly as-is using a direct <img src=\"/assets/generated/...\"> reference to the copied static asset, and remove any styling that visually alters the image (including but not limited to rounded corners/clipping, overlays, opacity, CSS filters, or object-fit cropping).",
       "reqIds": [
-        "REQ-9"
-      ],
-      "version": 1
-    },
-    {
-      "id": "IF-5",
-      "title": "Footer with dynamic contact info and branch locations",
-      "synonyms": [
-        "Footer contact section",
-        "Quick links"
-      ],
-      "description": "Footer renders BrandLogo, quick links, dynamic contact methods (phone/email/Instagram/Facebook), branch locations, and optional founder/director attribution fetched from backend contact info.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-6",
-      "title": "Home page hero with HR ACADEMY heading and primary CTAs",
-      "synonyms": [
-        "Homepage hero",
-        "Hero heading style"
-      ],
-      "description": "Hero section displays the canonical logo, the “HR ACADEMY” heading (restored styling), the “Trusted by 6000+ parents worldwide” tagline, optional founder/director line, and CTA buttons to Courses and Contact plus a WhatsApp quick action.",
-      "reqIds": [
-        "REQ-8"
-      ],
-      "version": 1
-    },
-    {
-      "id": "IF-7",
-      "title": "Homepage highlights and mission content sections",
-      "synonyms": [
-        "Why choose us",
-        "Mission section"
-      ],
-      "description": "Renders a highlight grid (faculty/results/small batches/online math/comprehensive courses) and a mission section with supporting generated images.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-8",
-      "title": "Public course catalog grouped by category",
-      "synonyms": [
-        "Courses page",
-        "Categorized course listing"
-      ],
-      "description": "Fetches courses from the canister and displays them grouped and ordered by category with category-specific badge styling and skeleton loading placeholders.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-9",
-      "title": "Public gallery grid with captions and empty-state placeholders",
-      "synonyms": [
-        "Photo gallery",
-        "Media grid"
-      ],
-      "description": "Gallery page displays a responsive grid of backend-provided ExternalBlob images (via getDirectURL) with hover captions, skeleton loading, and fallback placeholder images when empty.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-10",
-      "title": "Public contact page with international inquiry form",
-      "synonyms": [
-        "International students contact form",
-        "Inquiry submission"
-      ],
-      "description": "Contact page shows contact methods and branch locations, includes an International Students section with WhatsApp consultation link, and provides a form (name, email, country, message) that submits inquiries to the canister with toast feedback.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-11",
-      "title": "Public review submission with star rating and optional anonymity",
-      "synonyms": [
-        "Testimonials submission",
-        "Review form"
-      ],
-      "description": "Homepage includes a review form allowing optional name, anonymous submissions, and a 1–5 star rating; submissions are sent to the canister and acknowledged with toasts.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-12",
-      "title": "Public review screenshot gallery",
-      "synonyms": [
-        "Review images",
-        "Social proof screenshots"
-      ],
-      "description": "Homepage displays admin-uploaded review screenshot images served by the canister using ExternalBlob direct URLs with optional captions.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-13",
-      "title": "Internet Identity authentication provider",
-      "synonyms": [
-        "II auth",
-        "AuthClient integration"
-      ],
-      "description": "Provides login/logout and identity session restoration using @dfinity/auth-client; exposes login state flags and errors via React context.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-14",
-      "title": "Per-identity canister actor lifecycle with RBAC initialization",
-      "synonyms": [
-        "Actor initialization",
-        "useActor hook"
-      ],
-      "description": "Creates anonymous actors when logged out and identity-bound actors when logged in; authenticated actor creation triggers _initializeAccessControlWithSecret using a secret token extracted from the URL hash/session.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-15",
-      "title": "Admin dashboard with role-gated access",
-      "synonyms": [
-        "Admin panel",
-        "Owner panel"
-      ],
-      "description": "Admin route requires Internet Identity login and a canister-admin role (RBAC). Displays a tabbed dashboard for managing courses, gallery images, review screenshots, submitted reviews, and contact info, plus an owner guide.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-16",
-      "title": "Admin content management: courses CRUD",
-      "synonyms": [
-        "Manage courses",
-        "Course admin"
-      ],
-      "description": "Admins can add/update/remove courses (id/name/category/description) via the UI; changes invalidate the React Query courses cache.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-17",
-      "title": "Admin content management: gallery image upload and deletion",
-      "synonyms": [
-        "Manage gallery",
-        "Gallery admin"
-      ],
-      "description": "Admins can upload gallery images from local files (converted to ExternalBlob bytes) with captions and delete existing images; UI previews images via direct URLs.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-18",
-      "title": "Admin content management: review screenshots and submitted reviews",
-      "synonyms": [
-        "Manage reviews",
-        "Review admin"
-      ],
-      "description": "Admins can upload/delete review screenshot images and view all submitted text reviews with star-rating display; operations invalidate appropriate React Query caches.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-19",
-      "title": "Admin content management: contact info update",
-      "synonyms": [
-        "Manage contact details",
-        "Branches management"
-      ],
-      "description": "Admins can update phone, email, WhatsApp URL, Instagram handle, Facebook URL, owner/director name, and branch addresses; updates propagate to public pages via query invalidation.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-20",
-      "title": "Backend RBAC with admin bootstrap token and role APIs",
-      "synonyms": [
-        "Authorization",
-        "Access control"
-      ],
-      "description": "Motoko RBAC supports admin/user/guest roles, admin-only role assignment, and admin checks. Admin bootstrap is guarded by env token CAFFEINE_ADMIN_TOKEN matched against a user-provided secret during initialization.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-21",
-      "title": "Backend domain APIs for academy content and submissions",
-      "synonyms": [
-        "Canister content store",
-        "Backend actor APIs"
-      ],
-      "description": "Motoko actor stores courses, gallery images, review screenshot images, submitted reviews, international inquiries, contact info, and user profiles; exposes public getters and admin-gated mutators/list endpoints (e.g., getAllSubmittedReviews, getInternationalInquiries).",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-22",
-      "title": "User profile storage and retrieval",
-      "synonyms": [
-        "User profile APIs",
-        "Caller profile"
-      ],
-      "description": "Authenticated users can read/save their own profile; admins can view other users' profiles. Access is enforced via RBAC permissions.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-23",
-      "title": "Blob storage maintenance endpoints (gateway auth, dead-blob pruning, cycles refill)",
-      "synonyms": [
-        "Storage maintenance",
-        "Dead blob pruning"
-      ],
-      "description": "Includes canister endpoints to refresh authorized gateway principals, check blob liveness, list/prune dead blobs (with explicit GC trigger), and top up cycles via a cashier principal.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-24",
-      "title": "Reusable build-template scaffold (React+Motoko) with asset maintenance scripts",
-      "synonyms": [
-        "Project template",
-        "Build/deploy scaffold",
-        "Resize/prune image scripts"
-      ],
-      "description": "Adds a build-template directory containing a reusable ICP project scaffold (frontend+backend config, Docker/deploy tooling, and baseline shadcn/ui component set) along with utility scripts for resizing images and pruning unused images to support repeatable builds and asset maintenance.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "feature-remove-the-extra-third-contact-navigation-option-from-the-site-header-so-visitors-do-not-see-multiple-ways-to-navigate-to-the-contact-page-in-the-header-ui-keep-a-single-clear-contact-call-to-action-in-the-header-the-existing-contact-us-button-and-ensure-the-desktop-nav-links-and-mobile-sheet-menu-no-longer-include-a-separate-contact-link-that-duplicates-the-button",
-      "title": "Remove the extra (third) \"Contact\" navigation option from the site header so visitors do not see multiple ways to navigate to the Contact page in the header UI. Keep a single, clear Contact call-to-action in the header (the existing \"Contact Us\" button) and ensure the desktop nav links and mobile sheet menu no longer include a separate \"Contact\" link that duplicates the button.",
-      "reqIds": [
-        "REQ-10"
+        "REQ-2"
       ],
       "version": 1
     }
@@ -307,13 +29,13 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Remove the 3rd duplicate \"Contact\" option (extra Contact link) from the UI navigation/menu",
+      "summary": "Use the provided photo exactly as-is (no changes or alterations) in the app/build",
       "reqIds": [],
       "status": "pending"
     }
   ],
   "gameProjectType": "none",
-  "projectName": "HR Academy",
+  "projectName": "Use uploaded photo exactly as-is in Home “Our Mission” section",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

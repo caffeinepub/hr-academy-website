@@ -1,22 +1,37 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Remove duplicate Contact link from header navigation",
+  "title": "Use uploaded photo exactly as-is in Home “Our Mission” section",
   "requirements": [
     {
-      "id": "REQ-10",
-      "summary": "Remove the duplicate 'Contact' text link from both desktop nav links and the mobile sheet menu while keeping the existing 'Contact Us' header button as the sole header CTA to /contact.",
+      "id": "REQ-1",
+      "summary": "Copy the uploaded image into frontend public static assets without any processing or modification.",
       "acceptanceCriteria": [
-        "On desktop header, there is no separate text nav link labeled \"Contact\" if the \"Contact Us\" button is present.",
-        "On mobile header, the slide-out menu does not list a separate \"Contact\" link if the \"Contact Us\" button is present.",
-        "Navigating to /contact is still possible via the remaining header contact call-to-action.",
-        "No other header navigation items are removed or renamed."
+        "A file derived from the user upload \"HR Academy 1-2.jpeg\" exists under frontend/public/assets/generated/ with identical visual content to the upload.",
+        "The asset is served directly from the public folder (not through backend blob storage) and is not processed/optimized by any runtime code.",
+        "No additional generated/edited variant of the image is created (only a direct copy stored as a static asset)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/Header.tsx",
+          "path": "frontend/public/assets/generated/hr-academy-1-2-uploaded.dim_1280x360.jpeg",
+          "operation": "create",
+          "description": "Add a direct, byte-for-byte copy of the uploaded file \"HR Academy 1-2.jpeg\" as a static public asset at this exact path/filename; do not resize, recompress, crop, convert, strip metadata, or otherwise alter the file in any way."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Render the uploaded image in the Home page “Our Mission” section using a direct static asset <img> reference with no visual-altering styles.",
+      "acceptanceCriteria": [
+        "The “Our Mission” section on the Home page renders the uploaded photo from the static asset path in frontend/public/assets/generated/.",
+        "The rendered image is not clipped (no border-radius masking), not filtered, and not overlaid; it appears as the original rectangular photo.",
+        "The image remains responsive (can scale to container width) without changing aspect ratio or cropping any part of the photo."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/HomePage.tsx",
           "operation": "modify",
-          "description": "Update the shared header navItems list to remove the '/contact' item labeled 'Contact' so it no longer renders in the desktop link list or the mobile sheet menu, while preserving the existing 'Contact Us' button link to '/contact'. Ensure no other nav items are changed, and do not modify any files under frontend/src/components/ui."
+          "description": "Update the Mission section image to use src=\"/assets/generated/hr-academy-1-2-uploaded.dim_1280x360.jpeg\" and remove any classes/styles that visually alter the image (e.g., rounded corners/clipping, overlays/opacity, CSS filters, object-fit cropping), keeping it responsive via width scaling with height auto."
         }
       ]
     }

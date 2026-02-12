@@ -1,38 +1,59 @@
 {
   "kind": "build_request",
-  "title": "Remove duplicate third Contact option from header navigation",
+  "title": "Use uploaded photo exactly as-is in Home “Our Mission” section",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-10",
-      "text": "Remove the extra (third) \"Contact\" navigation option from the site header so visitors do not see multiple ways to navigate to the Contact page in the header UI. Keep a single, clear Contact call-to-action in the header (the existing \"Contact Us\" button) and ensure the desktop nav links and mobile sheet menu no longer include a separate \"Contact\" link that duplicates the button.",
+      "id": "REQ-1",
+      "text": "Add the uploaded image file \"HR Academy 1-2.jpeg\" to the frontend static assets at frontend/public/assets/generated/ and ensure it is stored and served exactly as provided (no resizing, recompression, cropping, filters, metadata stripping, format conversion, or other modifications).",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-4"
         ],
         "quotes": [
-          "Remove the 3rd \"Contact\" option"
+          "Use this same exact photo without changing or altering anything in it, use it exactly the way it is"
         ]
       },
       "acceptanceCriteria": [
-        "On desktop header, there is no separate text nav link labeled \"Contact\" if the \"Contact Us\" button is present.",
-        "On mobile header, the slide-out menu does not list a separate \"Contact\" link if the \"Contact Us\" button is present.",
-        "Navigating to /contact is still possible via the remaining header contact call-to-action.",
-        "No other header navigation items are removed or renamed."
+        "A file derived from the user upload \"HR Academy 1-2.jpeg\" exists under frontend/public/assets/generated/ with identical visual content to the upload.",
+        "The asset is served directly from the public folder (not through backend blob storage) and is not processed/optimized by any runtime code.",
+        "No additional generated/edited variant of the image is created (only a direct copy stored as a static asset)."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Update the Home page Mission section (\"Our Mission\" on the / route) to display the uploaded photo exactly as-is using a direct <img src=\"/assets/generated/...\"> reference to the copied static asset, and remove any styling that visually alters the image (including but not limited to rounded corners/clipping, overlays, opacity, CSS filters, or object-fit cropping).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "Use this same exact photo without changing or altering anything in it, use it exactly the way it is"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The “Our Mission” section on the Home page renders the uploaded photo from the static asset path in frontend/public/assets/generated/.",
+        "The rendered image is not clipped (no border-radius masking), not filtered, and not overlaid; it appears as the original rectangular photo.",
+        "The image remains responsive (can scale to container width) without changing aspect ratio or cropping any part of the photo."
       ]
     }
   ],
   "constraints": [
-    "Do not modify any files under frontend/src/components/ui or any paths listed as immutable in SYSTEM_CONTEXT."
+    "Do not modify, crop, resize, recompress, convert, or otherwise alter the uploaded image content in any step of the build.",
+    "Do not edit files under frontend/src/components/ui or any other immutable paths listed in SYSTEM_CONTEXT.",
+    "Keep backend architecture as a single Motoko actor; no backend changes are required for this request."
   ],
   "nonGoals": [
-    "Changing footer links or contact information content.",
-    "Changing routes or the Contact page functionality.",
-    "Backend changes or data migrations."
+    "Adding new gallery/admin upload flows for this specific image.",
+    "Changing any copy/text content outside of what is necessary to display the image exactly as-is.",
+    "Storing this image in backend blob storage or adding new backend APIs for it."
   ],
   "imageRequirements": {
-    "required": [],
+    "required": [
+      "Wide group photo on an outdoor sports field (hr-academy-1-2-uploaded.dim_1280x360.jpeg)"
+    ],
     "edits": []
   },
   "userProfileUpdate": {

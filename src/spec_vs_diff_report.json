@@ -1,38 +1,54 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-09T10:53:58.858Z",
-  "summary": "Header.tsx removes the separate \"Contact\" nav link and retains a single \"Contact Us\" button linking to /contact on both desktop and mobile. However, the header nav items now only include Home and Gallery, suggesting another navigation item (e.g., Courses) was removed, which conflicts with the acceptance criteria. Two metadata/state files were also modified without being requested.",
+  "generatedAt": "2026-02-12T09:39:16.124Z",
+  "summary": "REQ-1 is not implemented because no image asset was added under frontend/public/assets/generated/. REQ-2 cannot be verified from the provided truncated HomePage.tsx diff (the Mission/“Our Mission” section changes are not shown), though a file summary claims it was updated.",
   "missing_requirements": [
     {
-      "id": "REQ-10",
-      "requirement": "No other header navigation items are removed or renamed while removing the duplicate \"Contact\" link (i.e., only the extra \"Contact\" option should be removed).",
-      "reason": "The updated header navItems list contains only \"Home\" and \"Gallery\"; any previously existing header nav item(s) besides the duplicate \"Contact\" appear to have been removed, violating the AC that no other header navigation items are removed or renamed.",
+      "id": "REQ-1",
+      "requirement": "Add the uploaded image file \"HR Academy 1-2.jpeg\" to frontend/public/assets/generated/ as an unmodified static asset served directly from /public (no resizing/recompression/cropping/conversion; only a direct copy; no additional variants).",
+      "reason": "The diff shows no added files, and there is no evidence of the required image being copied into frontend/public/assets/generated/.",
       "evidence": [
-        "frontend/src/components/Header.tsx"
+        "<file-diff>: ADDED FILES: none"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "requirement": "Update the Home page “Our Mission” section (/ route) to render the uploaded photo via a direct <img src=\"/assets/generated/...\"> to the copied static asset, removing any styling that clips/filters/overlays/crops (responsive scaling allowed without aspect-ratio change).",
+      "reason": "HomePage.tsx is truncated before the Mission section; the diff excerpt does not show an <img> pointing to /assets/generated/hr-academy-1-2-uploaded.dim_1280x360.jpeg nor removal of any styling that could alter the image. The separate summary text is not sufficient proof of implementation.",
+      "evidence": [
+        "frontend/src/pages/HomePage.tsx (truncated)",
+        "frontend-file-summaries.txt (claims change, but not code evidence)"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Updated/rewrote broad application feature summaries (App, Footer, pages, hooks, branding, etc.) in frontend-file-summaries.txt unrelated to removing a duplicate Contact header link.",
-      "reason": "The BuildRequest is narrowly scoped to removing a duplicate header Contact option; changing repository-wide file summary content is not requested and exceeds scope/non-goals.",
+      "description": "Updated hero section background to use /assets/generated/hero-banner.dim_1200x600.jpg.",
+      "reason": "The BuildRequest only asks to add and display the uploaded group photo in the Home “Our Mission” section; it does not request changes to the hero background asset.",
       "evidence": [
-        "frontend-file-summaries.txt"
+        "frontend/src/pages/HomePage.tsx (truncated): style={{ backgroundImage: 'url(/assets/generated/hero-banner.dim_1200x600.jpg)' }}"
       ]
     },
     {
-      "description": "Modified overall project state/versioning and long-form project description in project_state.json unrelated to the header Contact link change.",
-      "reason": "The BuildRequest contains no requirement to update project state metadata; this is extra work outside the requested header navigation change.",
+      "description": "Modified project_state.json to add/track new_feature_requests entries (AR-1/AR-2/AR-3).",
+      "reason": "The BuildRequest does not ask for changes to project tracking/state files.",
       "evidence": [
         "project_state.json"
       ]
+    },
+    {
+      "description": "Modified frontend-file-summaries.txt contents.",
+      "reason": "The BuildRequest does not request documentation/summary file updates.",
+      "evidence": [
+        "frontend-file-summaries.txt"
+      ]
     }
   ],
-  "confidence": 0.78,
+  "confidence": 0.68,
   "changed_files": [
     "frontend-file-summaries.txt",
-    "frontend/src/components/Header.tsx",
+    "frontend/src/pages/HomePage.tsx",
     "project_state.json"
   ]
 }

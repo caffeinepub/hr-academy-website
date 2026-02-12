@@ -1,35 +1,46 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-09T10:53:58.861Z",
+  "generatedAt": "2026-02-12T09:39:16.126Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 1,
-    "implemented": 1,
+    "total": 2,
+    "implemented": 2,
     "items": [
       {
-        "id": "REQ-10",
-        "summary": "Remove the extra (third) \"Contact\" navigation option from the site header so visitors do not see multiple ways to navigate to the Contact page in the header UI. Keep a single, clear Contact call-to-action in the header (the existing \"Contact Us\" button) and ensure the desktop nav links and mobile sheet menu no longer include a separate \"Contact\" link that duplicates the button.",
+        "id": "REQ-1",
+        "summary": "Add the uploaded image file \"HR Academy 1-2.jpeg\" to the frontend static assets at frontend/public/assets/generated/ and ensure it is stored and served exactly as provided (no resizing, recompression, cropping, filters, metadata stripping, format conversion, or other modifications).",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/Header.tsx"
+          "frontend/public/assets/generated/hr-academy-1-2-uploaded.dim_1280x360.jpeg"
         ],
         "matchedFiles": [
-          "frontend/src/components/Header.tsx"
+          "frontend/public/assets/generated/hr-academy-1-2-uploaded.dim_1280x360.jpeg"
+        ]
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Update the Home page Mission section (\"Our Mission\" on the / route) to display the uploaded photo exactly as-is using a direct <img src=\"/assets/generated/...\"> reference to the copied static asset, and remove any styling that visually alters the image (including but not limited to rounded corners/clipping, overlays, opacity, CSS filters, or object-fit cropping).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/HomePage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/HomePage.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
     "build-request.json",
-    "caffeine.lock.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/components/Header.tsx",
+    "frontend/public/assets/generated/hr-academy-1-2-uploaded.dim_1280x360.jpeg",
+    "frontend/src/pages/HomePage.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

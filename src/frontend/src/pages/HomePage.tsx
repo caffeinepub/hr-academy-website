@@ -152,11 +152,20 @@ export default function HomePage() {
       {/* Mission Section */}
       <section className="py-16 bg-gray-900">
         <div className="container">
-          <div className="grid gap-8 md:grid-cols-2 items-center">
-            <div className="space-y-4">
-              <h2 className="text-3xl md:text-4xl font-bold text-white">
-                Our <span className="text-accent-red">Mission</span>
-              </h2>
+          <div className="space-y-8">
+            <h2 className="text-3xl md:text-4xl font-bold text-white text-center">
+              Our <span className="text-accent-red">Mission</span>
+            </h2>
+            
+            <div className="max-w-5xl mx-auto">
+              <img 
+                src="/assets/generated/hr-academy-1-2-uploaded.dim_1280x360.jpeg" 
+                alt="HR Academy Students and Faculty" 
+                className="shadow-2xl w-full h-auto"
+              />
+            </div>
+
+            <div className="max-w-3xl mx-auto space-y-4 text-center">
               <p className="text-lg text-gray-300">
                 At HR Academy, we are committed to providing exceptional education that transforms lives. 
                 Our mission is to nurture academic excellence while building confidence and character in every student.
@@ -169,18 +178,6 @@ export default function HomePage() {
                 We believe quality education should be accessible to all, which is why we offer very affordable fees 
                 without compromising on the excellence of our teaching and resources.
               </p>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <img 
-                src="/assets/generated/classroom-session.dim_800x600.jpg" 
-                alt="Classroom Session" 
-                className="rounded-lg shadow-lg w-full h-48 object-cover"
-              />
-              <img 
-                src="/assets/generated/student-success.dim_800x600.jpg" 
-                alt="Student Success" 
-                className="rounded-lg shadow-lg w-full h-48 object-cover mt-8"
-              />
             </div>
           </div>
         </div>
