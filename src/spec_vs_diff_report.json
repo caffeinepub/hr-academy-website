@@ -1,51 +1,37 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-12T09:39:16.124Z",
-  "summary": "REQ-1 is not implemented because no image asset was added under frontend/public/assets/generated/. REQ-2 cannot be verified from the provided truncated HomePage.tsx diff (the Mission/“Our Mission” section changes are not shown), though a file summary claims it was updated.",
+  "generatedAt": "2026-02-12T13:36:40.825Z",
+  "summary": "REQ-2 appears implemented via new client-side error state for the Mission image on HomePage, but REQ-1 is not verifiably satisfied because the required static image file is not added/confirmed in the diff (no new public asset file shown). Diff also includes non-requested project metadata/documentation updates.",
   "missing_requirements": [
     {
       "id": "REQ-1",
-      "requirement": "Add the uploaded image file \"HR Academy 1-2.jpeg\" to frontend/public/assets/generated/ as an unmodified static asset served directly from /public (no resizing/recompression/cropping/conversion; only a direct copy; no additional variants).",
-      "reason": "The diff shows no added files, and there is no evidence of the required image being copied into frontend/public/assets/generated/.",
+      "requirement": "Ensure the Mission section image loads correctly under the “Our Mission” heading on the Home page by verifying the static asset exists at the exact path referenced by MISSION_IMAGE_PATH and is served by the frontend build.",
+      "reason": "The acceptance criteria requires the exact image file to exist in the repo at frontend/public/assets/generated/img-20260210-wa0017-uploaded.dim_1536x307.jpg. The diff shows no added files and does not show that this public asset was added or present; therefore the repo/build/static serving requirements cannot be confirmed from the diff.",
       "evidence": [
-        "<file-diff>: ADDED FILES: none"
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "requirement": "Update the Home page “Our Mission” section (/ route) to render the uploaded photo via a direct <img src=\"/assets/generated/...\"> to the copied static asset, removing any styling that clips/filters/overlays/crops (responsive scaling allowed without aspect-ratio change).",
-      "reason": "HomePage.tsx is truncated before the Mission section; the diff excerpt does not show an <img> pointing to /assets/generated/hr-academy-1-2-uploaded.dim_1280x360.jpeg nor removal of any styling that could alter the image. The separate summary text is not sufficient proof of implementation.",
-      "evidence": [
-        "frontend/src/pages/HomePage.tsx (truncated)",
-        "frontend-file-summaries.txt (claims change, but not code evidence)"
+        "<file-diff>: ADDED FILES: none",
+        "frontend/src/pages/HomePage.tsx (imports MISSION_IMAGE_PATH but does not evidence the public asset file itself)"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Updated hero section background to use /assets/generated/hero-banner.dim_1200x600.jpg.",
-      "reason": "The BuildRequest only asks to add and display the uploaded group photo in the Home “Our Mission” section; it does not request changes to the hero background asset.",
-      "evidence": [
-        "frontend/src/pages/HomePage.tsx (truncated): style={{ backgroundImage: 'url(/assets/generated/hero-banner.dim_1200x600.jpg)' }}"
-      ]
-    },
-    {
-      "description": "Modified project_state.json to add/track new_feature_requests entries (AR-1/AR-2/AR-3).",
-      "reason": "The BuildRequest does not ask for changes to project tracking/state files.",
+      "description": "Added/updated project tracking state entries (AR-1/AR-2) in project_state.json.",
+      "reason": "BuildRequest only asked for frontend Mission image fix + fallback handling; it did not request adding/updating project management metadata files.",
       "evidence": [
         "project_state.json"
       ]
     },
     {
-      "description": "Modified frontend-file-summaries.txt contents.",
-      "reason": "The BuildRequest does not request documentation/summary file updates.",
+      "description": "Updated/expanded repository-wide change descriptions in frontend-file-summaries.txt (mentions many files beyond the 3 actually modified).",
+      "reason": "BuildRequest did not request updating documentation/summaries; additionally, this file claims changes across many files not reflected in the provided diff (which lists only 3 modified files).",
       "evidence": [
-        "frontend-file-summaries.txt"
+        "frontend-file-summaries.txt",
+        "<file-diff>: Modified: 3"
       ]
     }
   ],
-  "confidence": 0.68,
+  "confidence": 0.72,
   "changed_files": [
     "frontend-file-summaries.txt",
     "frontend/src/pages/HomePage.tsx",

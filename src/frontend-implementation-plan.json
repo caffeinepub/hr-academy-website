@@ -1,37 +1,41 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Use uploaded photo exactly as-is in Home “Our Mission” section",
+  "title": "Fix missing Mission image asset and add Mission image fallback UI",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Copy the uploaded image into frontend public static assets without any processing or modification.",
+      "summary": "Ensure the Mission section image static asset exists at the exact MISSION_IMAGE_PATH and is served by the frontend build.",
       "acceptanceCriteria": [
-        "A file derived from the user upload \"HR Academy 1-2.jpeg\" exists under frontend/public/assets/generated/ with identical visual content to the upload.",
-        "The asset is served directly from the public folder (not through backend blob storage) and is not processed/optimized by any runtime code.",
-        "No additional generated/edited variant of the image is created (only a direct copy stored as a static asset)."
+        "The file `frontend/public/assets/generated/img-20260210-wa0017-uploaded.dim_1536x307.jpg` exists in the repo and is included in the deployed frontend build output as a static asset.",
+        "Requesting `GET /assets/generated/img-20260210-wa0017-uploaded.dim_1536x307.jpg` returns HTTP 200 and the image bytes.",
+        "The image renders on the Home page Mission section without broken-image behavior."
       ],
       "file_operations": [
         {
-          "path": "frontend/public/assets/generated/hr-academy-1-2-uploaded.dim_1280x360.jpeg",
+          "path": "frontend/public/assets/generated/img-20260210-wa0017-uploaded.dim_1536x307.jpg",
           "operation": "create",
-          "description": "Add a direct, byte-for-byte copy of the uploaded file \"HR Academy 1-2.jpeg\" as a static public asset at this exact path/filename; do not resize, recompress, crop, convert, strip metadata, or otherwise alter the file in any way."
+          "description": "Add the uploaded Mission image file at the exact path referenced by `MISSION_IMAGE_PATH` so the bundler serves it as a static asset. IMPORTANT: do not modify/recompress/resize/convert/rename the image bytes; place the file exactly as-is at this path."
+        },
+        {
+          "path": "frontend/src/constants/missionAssets.ts",
+          "operation": "modify",
+          "description": "Verify `MISSION_IMAGE_PATH` remains the single source of truth and matches `/assets/generated/img-20260210-wa0017-uploaded.dim_1536x307.jpg` exactly (including casing and leading slash)."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Render the uploaded image in the Home page “Our Mission” section using a direct static asset <img> reference with no visual-altering styles.",
+      "summary": "Add client-side error handling so the Mission image shows an in-page English fallback message if it fails to load.",
       "acceptanceCriteria": [
-        "The “Our Mission” section on the Home page renders the uploaded photo from the static asset path in frontend/public/assets/generated/.",
-        "The rendered image is not clipped (no border-radius masking), not filtered, and not overlaid; it appears as the original rectangular photo.",
-        "The image remains responsive (can scale to container width) without changing aspect ratio or cropping any part of the photo."
+        "If the Mission image fails to load (e.g., by temporarily changing `MISSION_IMAGE_PATH` to an invalid path), the Home page displays a visible fallback message in place of the image.",
+        "If the Mission image loads successfully, no fallback message is shown and the layout remains unchanged."
       ],
       "file_operations": [
         {
           "path": "frontend/src/pages/HomePage.tsx",
           "operation": "modify",
-          "description": "Update the Mission section image to use src=\"/assets/generated/hr-academy-1-2-uploaded.dim_1280x360.jpeg\" and remove any classes/styles that visually alter the image (e.g., rounded corners/clipping, overlays/opacity, CSS filters, object-fit cropping), keeping it responsive via width scaling with height auto."
+          "description": "Update the Mission section `<img>` to track load errors (e.g., via React state + `onError`) and conditionally render a clear in-page English fallback message in place of the image when loading fails, while keeping the current layout unchanged when the image loads successfully."
         }
       ]
     }

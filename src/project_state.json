@@ -2,24 +2,15 @@
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
   "summary": "New project",
-  "architectural_notes": [
-    "Treat the user-provided photo as immutable; do not crop, resize, filter, compress, or otherwise alter it."
+  "architectural_notes": [],
+  "known_issues": [
+    "Image under the “Our Mission” heading is not loading for the user."
   ],
-  "known_issues": [],
-  "isFixRequest": false,
-  "imageRequirements": "## Required Images\n- Wide group photo on an outdoor sports field (hr-academy-1-2-uploaded.dim_1280x360.jpeg)",
+  "isFixRequest": true,
   "existing_features": [
     {
-      "id": "feature-add-the-uploaded-image-file-hr-academy-1-2-jpeg-to-the-frontend-static-assets-at-frontend-public-assets-generated-and-ensure-it-is-stored-and-served-exactly-as-provided-no-resizing-recompression-cropping-filters-metadata-stripping-format-conversion-or-other-modifications",
-      "title": "Add the uploaded image file \"HR Academy 1-2.jpeg\" to the frontend static assets at frontend/public/assets/generated/ and ensure it is stored and served exactly as provided (no resizing, recompression, cropping, filters, metadata stripping, format conversion, or other modifications).",
-      "reqIds": [
-        "REQ-1"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-the-home-page-mission-section-our-mission-on-the-route-to-display-the-uploaded-photo-exactly-as-is-using-a-direct-img-src-assets-generated-reference-to-the-copied-static-asset-and-remove-any-styling-that-visually-alters-the-image-including-but-not-limited-to-rounded-corners-clipping-overlays-opacity-css-filters-or-object-fit-cropping",
-      "title": "Update the Home page Mission section (\"Our Mission\" on the / route) to display the uploaded photo exactly as-is using a direct <img src=\"/assets/generated/...\"> reference to the copied static asset, and remove any styling that visually alters the image (including but not limited to rounded corners/clipping, overlays, opacity, CSS filters, or object-fit cropping).",
+      "id": "feature-add-resilient-client-side-error-handling-for-the-mission-section-image-element-so-that-if-the-image-fails-to-load-the-ui-shows-a-clear-in-page-fallback-message-english-instead-of-a-broken-image",
+      "title": "Add resilient client-side error handling for the Mission section image element so that if the image fails to load, the UI shows a clear in-page fallback message (English) instead of a broken image.",
       "reqIds": [
         "REQ-2"
       ],
@@ -29,13 +20,14 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Use the provided photo exactly as-is (no changes or alterations) in the app/build",
-      "reqIds": [],
+      "summary": "Ensure the Mission section image loads correctly under the “Our Mission” heading on the Home page by verifying the static asset exists at the exact path referenced by `MISSION_IMAGE_PATH` and is served by the frontend build.",
+      "reqIds": [
+        "REQ-1"
+      ],
       "status": "pending"
     }
   ],
-  "gameProjectType": "none",
-  "projectName": "Use uploaded photo exactly as-is in Home “Our Mission” section",
+  "projectName": "Fix missing Mission image under “Our Mission” section",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

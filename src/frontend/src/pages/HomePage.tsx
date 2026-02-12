@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useNavigate } from '@tanstack/react-router';
-import { GraduationCap, Award, Users, BookOpen, UserCheck, Star } from 'lucide-react';
+import { GraduationCap, Award, Users, BookOpen, UserCheck, Star, ImageOff } from 'lucide-react';
 import { SiWhatsapp } from 'react-icons/si';
 import { useGetContactInfo, useGetReviewImages, useSubmitReview, useGetSubmittedReviews } from '@/hooks/useQueries';
 import { useState } from 'react';
@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import BrandLogo from '@/components/BrandLogo';
+import { MISSION_IMAGE_PATH } from '@/constants/missionAssets';
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -25,6 +26,8 @@ export default function HomePage() {
     rating: 5,
     anonymous: false,
   });
+
+  const [missionImageError, setMissionImageError] = useState(false);
 
   const highlights = [
     {
@@ -158,11 +161,21 @@ export default function HomePage() {
             </h2>
             
             <div className="max-w-5xl mx-auto">
-              <img 
-                src="/assets/generated/hr-academy-1-2-uploaded.dim_1280x360.jpeg" 
-                alt="HR Academy Students and Faculty" 
-                className="shadow-2xl w-full h-auto"
-              />
+              {!missionImageError ? (
+                <img 
+                  src={MISSION_IMAGE_PATH}
+                  alt="HR Academy Students and Faculty" 
+                  className="w-full h-auto"
+                  onError={() => setMissionImageError(true)}
+                />
+              ) : (
+                <div className="w-full bg-gray-800 border border-accent-red/20 rounded-lg p-12 flex flex-col items-center justify-center space-y-4">
+                  <ImageOff className="h-16 w-16 text-accent-red/50" />
+                  <p className="text-gray-400 text-center text-lg">
+                    Mission image is currently unavailable. Please check back later.
+                  </p>
+                </div>
+              )}
             </div>
 
             <div className="max-w-3xl mx-auto space-y-4 text-center">

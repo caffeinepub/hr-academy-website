@@ -2,26 +2,8 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-add-the-uploaded-image-file-hr-academy-1-2-jpeg-to-the-frontend-static-assets-at-frontend-public-assets-generated-and-ensure-it-is-stored-and-served-exactly-as-provided-no-resizing-recompression-cropping-filters-metadata-stripping-format-conversion-or-other-modifications",
-      "featureTitle": "Add the uploaded image file \"HR Academy 1-2.jpeg\" to the frontend static assets at frontend/public/assets/generated/ and ensure it is stored and served exactly as provided (no resizing, recompression, cropping, filters, metadata stripping, format conversion, or other modifications).",
-      "files": [],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "blob-storage@4.0.0",
-        "authorization@4.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-1"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-update-the-home-page-mission-section-our-mission-on-the-route-to-display-the-uploaded-photo-exactly-as-is-using-a-direct-img-src-assets-generated-reference-to-the-copied-static-asset-and-remove-any-styling-that-visually-alters-the-image-including-but-not-limited-to-rounded-corners-clipping-overlays-opacity-css-filters-or-object-fit-cropping",
-      "featureTitle": "Update the Home page Mission section (\"Our Mission\" on the / route) to display the uploaded photo exactly as-is using a direct <img src=\"/assets/generated/...\"> reference to the copied static asset, and remove any styling that visually alters the image (including but not limited to rounded corners/clipping, overlays, opacity, CSS filters, or object-fit cropping).",
+      "featureId": "feature-add-resilient-client-side-error-handling-for-the-mission-section-image-element-so-that-if-the-image-fails-to-load-the-ui-shows-a-clear-in-page-fallback-message-english-instead-of-a-broken-image",
+      "featureTitle": "Add resilient client-side error handling for the Mission section image element so that if the image fails to load, the UI shows a clear in-page fallback message (English) instead of a broken image.",
       "files": [
         "frontend/src/pages/HomePage.tsx"
       ],

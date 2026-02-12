@@ -1,11 +1,10 @@
 # Specification
 
 ## Summary
-**Goal:** Use the uploaded photo “HR Academy 1-2.jpeg” exactly as-is in the Home page “Our Mission” section.
+**Goal:** Fix the missing “Our Mission” image on the Home page and provide a clear fallback message if the image fails to load.
 
 **Planned changes:**
-- Copy the uploaded file “HR Academy 1-2.jpeg” into `frontend/public/assets/generated/` as a static asset without any processing or modification.
-- Update the Home page “Our Mission” section on `/` to render the image via a direct `<img src="/assets/generated/...">` reference.
-- Remove/avoid any CSS or UI styling on that image that visually alters it (no cropping, clipping/rounded corners, overlays, opacity changes, filters), while keeping it responsive without changing aspect ratio.
+- Verify the Mission image file exists at the exact `MISSION_IMAGE_PATH` and is served as a static frontend asset at `/assets/generated/img-20260210-wa0017-uploaded.dim_1536x307.jpg`.
+- Update the Home page Mission image element to handle load errors client-side and display an in-page English fallback message instead of a broken image when loading fails.
 
-**User-visible outcome:** The Home page “Our Mission” section displays the exact uploaded rectangular photo with no visual alterations, while still scaling responsively.
+**User-visible outcome:** The “Our Mission” section image reliably renders on the Home page; if it can’t be loaded, users see a clear fallback message in place of the image.

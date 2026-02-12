@@ -1,59 +1,55 @@
 {
   "kind": "build_request",
-  "title": "Use uploaded photo exactly as-is in Home “Our Mission” section",
-  "priority": "normal",
+  "title": "Fix missing Mission image under “Our Mission” section",
+  "priority": "high",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Add the uploaded image file \"HR Academy 1-2.jpeg\" to the frontend static assets at frontend/public/assets/generated/ and ensure it is stored and served exactly as provided (no resizing, recompression, cropping, filters, metadata stripping, format conversion, or other modifications).",
+      "text": "Ensure the Mission section image loads correctly under the “Our Mission” heading on the Home page by verifying the static asset exists at the exact path referenced by `MISSION_IMAGE_PATH` and is served by the frontend build.",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-4"
         ],
         "quotes": [
-          "Use this same exact photo without changing or altering anything in it, use it exactly the way it is"
+          "The image isn't loading"
         ]
       },
       "acceptanceCriteria": [
-        "A file derived from the user upload \"HR Academy 1-2.jpeg\" exists under frontend/public/assets/generated/ with identical visual content to the upload.",
-        "The asset is served directly from the public folder (not through backend blob storage) and is not processed/optimized by any runtime code.",
-        "No additional generated/edited variant of the image is created (only a direct copy stored as a static asset)."
+        "The file `frontend/public/assets/generated/img-20260210-wa0017-uploaded.dim_1536x307.jpg` exists in the repo and is included in the deployed frontend build output as a static asset.",
+        "Requesting `GET /assets/generated/img-20260210-wa0017-uploaded.dim_1536x307.jpg` returns HTTP 200 and the image bytes.",
+        "The image renders on the Home page Mission section without broken-image behavior."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Update the Home page Mission section (\"Our Mission\" on the / route) to display the uploaded photo exactly as-is using a direct <img src=\"/assets/generated/...\"> reference to the copied static asset, and remove any styling that visually alters the image (including but not limited to rounded corners/clipping, overlays, opacity, CSS filters, or object-fit cropping).",
+      "text": "Add resilient client-side error handling for the Mission section image element so that if the image fails to load, the UI shows a clear in-page fallback message (English) instead of a broken image.",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-4"
         ],
         "quotes": [
-          "Use this same exact photo without changing or altering anything in it, use it exactly the way it is"
+          "The image isn't loading"
         ]
       },
       "acceptanceCriteria": [
-        "The “Our Mission” section on the Home page renders the uploaded photo from the static asset path in frontend/public/assets/generated/.",
-        "The rendered image is not clipped (no border-radius masking), not filtered, and not overlaid; it appears as the original rectangular photo.",
-        "The image remains responsive (can scale to container width) without changing aspect ratio or cropping any part of the photo."
+        "If the Mission image fails to load (e.g., by temporarily changing `MISSION_IMAGE_PATH` to an invalid path), the Home page displays a visible fallback message in place of the image.",
+        "If the Mission image loads successfully, no fallback message is shown and the layout remains unchanged."
       ]
     }
   ],
   "constraints": [
-    "Do not modify, crop, resize, recompress, convert, or otherwise alter the uploaded image content in any step of the build.",
-    "Do not edit files under frontend/src/components/ui or any other immutable paths listed in SYSTEM_CONTEXT.",
-    "Keep backend architecture as a single Motoko actor; no backend changes are required for this request."
+    "Do not modify, recompress, resize, convert, rename, or otherwise change the uploaded Mission image file bytes (`img-20260210-wa0017-uploaded.dim_1536x307.jpg`).",
+    "Keep using the centralized constant `MISSION_IMAGE_PATH` from `frontend/src/constants/missionAssets.ts` as the source of truth for the Mission image path.",
+    "Do not edit files under `frontend/src/components/ui` or other immutable paths listed in SYSTEM_CONTEXT."
   ],
   "nonGoals": [
-    "Adding new gallery/admin upload flows for this specific image.",
-    "Changing any copy/text content outside of what is necessary to display the image exactly as-is.",
-    "Storing this image in backend blob storage or adding new backend APIs for it."
+    "Adding new images or changing the Mission section copy/layout beyond what is necessary to handle image-load failures.",
+    "Changing backend logic or storing the Mission image in the backend blob store."
   ],
   "imageRequirements": {
-    "required": [
-      "Wide group photo on an outdoor sports field (hr-academy-1-2-uploaded.dim_1280x360.jpeg)"
-    ],
+    "required": [],
     "edits": []
   },
   "userProfileUpdate": {

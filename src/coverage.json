@@ -1,29 +1,28 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-12T09:39:16.126Z",
+  "generatedAt": "2026-02-12T13:36:40.827Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
     "total": 2,
-    "implemented": 2,
+    "implemented": 1,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Add the uploaded image file \"HR Academy 1-2.jpeg\" to the frontend static assets at frontend/public/assets/generated/ and ensure it is stored and served exactly as provided (no resizing, recompression, cropping, filters, metadata stripping, format conversion, or other modifications).",
-        "status": "implemented",
+        "summary": "Ensure the Mission section image loads correctly under the “Our Mission” heading on the Home page by verifying the static asset exists at the exact path referenced by `MISSION_IMAGE_PATH` and is served by the frontend build.",
+        "status": "missing",
         "plannedFiles": [
-          "frontend/public/assets/generated/hr-academy-1-2-uploaded.dim_1280x360.jpeg"
+          "frontend/public/assets/generated/img-20260210-wa0017-uploaded.dim_1536x307.jpg",
+          "frontend/src/constants/missionAssets.ts"
         ],
-        "matchedFiles": [
-          "frontend/public/assets/generated/hr-academy-1-2-uploaded.dim_1280x360.jpeg"
-        ]
+        "matchedFiles": []
       },
       {
         "id": "REQ-2",
-        "summary": "Update the Home page Mission section (\"Our Mission\" on the / route) to display the uploaded photo exactly as-is using a direct <img src=\"/assets/generated/...\"> reference to the copied static asset, and remove any styling that visually alters the image (including but not limited to rounded corners/clipping, overlays, opacity, CSS filters, or object-fit cropping).",
+        "summary": "Add resilient client-side error handling for the Mission section image element so that if the image fails to load, the UI shows a clear in-page fallback message (English) instead of a broken image.",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/pages/HomePage.tsx"
@@ -39,7 +38,6 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/public/assets/generated/hr-academy-1-2-uploaded.dim_1280x360.jpeg",
     "frontend/src/pages/HomePage.tsx",
     "project_state.json",
     "scratch/component-selection.json",
