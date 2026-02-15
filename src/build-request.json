@@ -1,52 +1,92 @@
 {
   "kind": "build_request",
-  "title": "Fix missing Mission image under “Our Mission” section",
-  "priority": "high",
+  "title": "Make all mentioned website sections editable in Admin and add an easy Preview workflow",
+  "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Ensure the Mission section image loads correctly under the “Our Mission” heading on the Home page by verifying the static asset exists at the exact path referenced by `MISSION_IMAGE_PATH` and is served by the frontend build.",
-      "target": "frontend",
+      "text": "Add backend data models and APIs to support admin-editable page content for all sections referenced in the admin guide (Home page content, Mission section, Testimonials/Reviews headings/content blocks, and any About/Contact text blocks), so that these sections are no longer hard-coded in the frontend.",
+      "target": "both",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-3"
         ],
         "quotes": [
-          "The image isn't loading"
+          "Make all the editable sections mentioned above editable and make preview button easy manageable"
         ]
       },
       "acceptanceCriteria": [
-        "The file `frontend/public/assets/generated/img-20260210-wa0017-uploaded.dim_1536x307.jpg` exists in the repo and is included in the deployed frontend build output as a static asset.",
-        "Requesting `GET /assets/generated/img-20260210-wa0017-uploaded.dim_1536x307.jpg` returns HTTP 200 and the image bytes.",
-        "The image renders on the Home page Mission section without broken-image behavior."
+        "Backend exposes query methods to fetch public (published) site content for each editable section.",
+        "Backend exposes admin-only methods to read and update draft site content for each editable section.",
+        "Frontend no longer hard-codes the editable text blocks for the targeted sections; instead it renders them from fetched site content data.",
+        "Non-admin users can only access published content."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Add resilient client-side error handling for the Mission section image element so that if the image fails to load, the UI shows a clear in-page fallback message (English) instead of a broken image.",
+      "text": "Extend the Admin Panel UI to include dedicated editing forms for each newly supported editable section (at minimum: Home hero headline/subheadline/description, Mission title/body text, Reviews/Testimonials section heading text, Contact page intro text), with Save actions that persist to the backend draft content APIs.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-3"
         ],
         "quotes": [
-          "The image isn't loading"
+          "Make all the editable sections mentioned above editable and make preview button easy manageable"
         ]
       },
       "acceptanceCriteria": [
-        "If the Mission image fails to load (e.g., by temporarily changing `MISSION_IMAGE_PATH` to an invalid path), the Home page displays a visible fallback message in place of the image.",
-        "If the Mission image loads successfully, no fallback message is shown and the layout remains unchanged."
+        "Admin page contains clear, labeled inputs for each editable section covered by REQ-1.",
+        "Each section editor has an explicit Save action and shows success/error toasts on completion/failure.",
+        "Saving updates invalidate/refetch the relevant React Query keys so the Admin UI immediately reflects the saved draft state.",
+        "The existing admin functionality (courses, gallery, review screenshots, contact info, submitted reviews) continues to work unchanged."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Implement a simple, easy-to-manage Preview workflow: allow admins to preview draft content on public pages without publishing, using a URL-based preview mode that can be toggled from the Admin Panel via a clearly visible Preview button.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "make preview button easy manageable"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Admin Panel provides a prominent Preview button (or a small set of Preview buttons per page) that opens the selected page in preview mode (e.g., with a query parameter like preview=1).",
+        "When preview mode is active and the viewer is an authenticated admin, pages render draft content instead of published content for the sections in REQ-1.",
+        "When preview mode is active but the viewer is not an authenticated admin, the app falls back to published content (no draft leakage).",
+        "Preview mode is easy to exit (e.g., a visible “Exit preview” control that removes/ignores preview mode)."
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "If the backend state schema changes are required to store new draft/published site content, add a safe Motoko upgrade path that preserves existing canister data (courses, gallery images, review images, submitted reviews, contact info, profiles, inquiries) during upgrades.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "Make all the editable sections mentioned above editable and make preview button easy manageable"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Upgrading the canister does not erase or reset existing persisted data.",
+        "New site-content state initializes sensibly on upgrade (e.g., defaults derived from current hard-coded content if no prior saved content exists)."
       ]
     }
   ],
   "constraints": [
-    "Do not modify, recompress, resize, convert, rename, or otherwise change the uploaded Mission image file bytes (`img-20260210-wa0017-uploaded.dim_1536x307.jpg`).",
-    "Keep using the centralized constant `MISSION_IMAGE_PATH` from `frontend/src/constants/missionAssets.ts` as the source of truth for the Mission image path.",
-    "Do not edit files under `frontend/src/components/ui` or other immutable paths listed in SYSTEM_CONTEXT."
+    "Backend must remain a single Motoko actor in backend/main.mo.",
+    "Do not edit files under frontend/src/components/ui or any frontend immutablePaths (frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx). Compose them instead.",
+    "Use English for all user-facing UI text."
   ],
   "nonGoals": [
-    "Adding new images or changing the Mission section copy/layout beyond what is necessary to handle image-load failures.",
-    "Changing backend logic or storing the Mission image in the backend blob store."
+    "Do not add third-party authentication providers (only Internet Identity is allowed).",
+    "Do not implement real-time collaboration or websockets for preview.",
+    "Do not redesign unrelated pages or change the existing gallery/courses/reviews/contact-info features beyond wiring them into the preview/publish flow if explicitly needed."
   ],
   "imageRequirements": {
     "required": [],

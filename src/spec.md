@@ -1,10 +1,13 @@
 # Specification
 
 ## Summary
-**Goal:** Fix the missing “Our Mission” image on the Home page and provide a clear fallback message if the image fails to load.
+**Goal:** Make all key website text sections admin-editable (not hard-coded) and add a simple preview mode so admins can view draft content on public pages before publishing.
 
 **Planned changes:**
-- Verify the Mission image file exists at the exact `MISSION_IMAGE_PATH` and is served as a static frontend asset at `/assets/generated/img-20260210-wa0017-uploaded.dim_1536x307.jpg`.
-- Update the Home page Mission image element to handle load errors client-side and display an in-page English fallback message instead of a broken image when loading fails.
+- Add backend site-content data models and APIs to store and serve draft vs published content for the editable sections referenced in the admin guide (Home, Mission, Testimonials/Reviews, and About/Contact text blocks).
+- Update the frontend pages to fetch and render these sections from backend site-content data (published for public users; draft only when in admin preview mode).
+- Extend the Admin Panel with dedicated editing forms for the new editable sections (e.g., Home hero fields, Mission title/body, Reviews heading, Contact intro) with Save actions and success/error toasts.
+- Add an Admin Panel Preview workflow that opens pages in a URL-based preview mode (e.g., `preview=1`), includes an easy “Exit preview” control, and prevents draft content from being shown to non-admin users.
+- Implement a safe Motoko upgrade path so existing persisted canister data is preserved while introducing new site-content state.
 
-**User-visible outcome:** The “Our Mission” section image reliably renders on the Home page; if it can’t be loaded, users see a clear fallback message in place of the image.
+**User-visible outcome:** Admins can edit key page text content from the Admin Panel, save it as draft, and preview how it looks on the live site via an easy preview toggle—while regular visitors continue to see only published content.

@@ -58,6 +58,14 @@ export const GalleryImage = IDL.Record({
   'caption' : IDL.Text,
   'image' : ExternalBlob,
 });
+export const HomePageContent = IDL.Record({
+  'missionStatement' : IDL.Text,
+  'contactText' : IDL.Text,
+  'heroSubtitle' : IDL.Text,
+  'aboutText' : IDL.Text,
+  'testimonialsHeading' : IDL.Text,
+  'heroTitle' : IDL.Text,
+});
 export const InternationalInquiry = IDL.Record({
   'country' : IDL.Text,
   'name' : IDL.Text,
@@ -121,6 +129,7 @@ export const idlService = IDL.Service({
   'getContactInfo' : IDL.Func([], [ContactInfo], ['query']),
   'getCourses' : IDL.Func([], [IDL.Vec(Course)], ['query']),
   'getGalleryImages' : IDL.Func([], [IDL.Vec(GalleryImage)], ['query']),
+  'getHomePageContent' : IDL.Func([IDL.Bool], [HomePageContent], ['query']),
   'getInternationalInquiries' : IDL.Func(
       [],
       [IDL.Vec(InternationalInquiry)],
@@ -134,6 +143,7 @@ export const idlService = IDL.Service({
       ['query'],
     ),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+  'publishHomePageContent' : IDL.Func([], [], []),
   'removeCourse' : IDL.Func([IDL.Text], [], []),
   'removeGalleryImage' : IDL.Func([IDL.Text], [], []),
   'removeReviewImage' : IDL.Func([IDL.Text], [], []),
@@ -161,6 +171,7 @@ export const idlService = IDL.Service({
       [],
       [],
     ),
+  'updateHomePageContent' : IDL.Func([HomePageContent], [], []),
 });
 
 export const idlInitArgs = [];
@@ -215,6 +226,14 @@ export const idlFactory = ({ IDL }) => {
     'id' : IDL.Text,
     'caption' : IDL.Text,
     'image' : ExternalBlob,
+  });
+  const HomePageContent = IDL.Record({
+    'missionStatement' : IDL.Text,
+    'contactText' : IDL.Text,
+    'heroSubtitle' : IDL.Text,
+    'aboutText' : IDL.Text,
+    'testimonialsHeading' : IDL.Text,
+    'heroTitle' : IDL.Text,
   });
   const InternationalInquiry = IDL.Record({
     'country' : IDL.Text,
@@ -279,6 +298,7 @@ export const idlFactory = ({ IDL }) => {
     'getContactInfo' : IDL.Func([], [ContactInfo], ['query']),
     'getCourses' : IDL.Func([], [IDL.Vec(Course)], ['query']),
     'getGalleryImages' : IDL.Func([], [IDL.Vec(GalleryImage)], ['query']),
+    'getHomePageContent' : IDL.Func([IDL.Bool], [HomePageContent], ['query']),
     'getInternationalInquiries' : IDL.Func(
         [],
         [IDL.Vec(InternationalInquiry)],
@@ -292,6 +312,7 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+    'publishHomePageContent' : IDL.Func([], [], []),
     'removeCourse' : IDL.Func([IDL.Text], [], []),
     'removeGalleryImage' : IDL.Func([IDL.Text], [], []),
     'removeReviewImage' : IDL.Func([IDL.Text], [], []),
@@ -319,6 +340,7 @@ export const idlFactory = ({ IDL }) => {
         [],
         [],
       ),
+    'updateHomePageContent' : IDL.Func([HomePageContent], [], []),
   });
 };
 

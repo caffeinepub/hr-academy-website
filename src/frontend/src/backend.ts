@@ -89,25 +89,13 @@ export class ExternalBlob {
         return this;
     }
 }
-export interface Course {
-    id: string;
-    name: string;
-    description: string;
-    category: CourseCategory;
-}
-export interface ContactInfo {
-    ownerName: string;
-    instagram: string;
-    whatsapp: string;
-    email: string;
-    facebook: string;
-    phone: string;
-    branches: Array<string>;
-}
-export interface GalleryImage {
-    id: string;
-    caption: string;
-    image: ExternalBlob;
+export interface HomePageContent {
+    missionStatement: string;
+    contactText: string;
+    heroSubtitle: string;
+    aboutText: string;
+    testimonialsHeading: string;
+    heroTitle: string;
 }
 export interface _CaffeineStorageRefillInformation {
     proposed_top_up_amount?: bigint;
@@ -121,17 +109,37 @@ export interface _CaffeineStorageCreateCertificateResult {
     method: string;
     blob_hash: string;
 }
+export interface InternationalInquiry {
+    country: string;
+    name: string;
+    email: string;
+    message: string;
+}
+export interface Course {
+    id: string;
+    name: string;
+    description: string;
+    category: CourseCategory;
+}
+export interface GalleryImage {
+    id: string;
+    caption: string;
+    image: ExternalBlob;
+}
 export interface SubmittedReview {
     id: string;
     content: string;
     name?: string;
     rating: bigint;
 }
-export interface InternationalInquiry {
-    country: string;
-    name: string;
+export interface ContactInfo {
+    ownerName: string;
+    instagram: string;
+    whatsapp: string;
     email: string;
-    message: string;
+    facebook: string;
+    phone: string;
+    branches: Array<string>;
 }
 export interface UserProfile {
     name: string;
@@ -171,11 +179,13 @@ export interface backendInterface {
     getContactInfo(): Promise<ContactInfo>;
     getCourses(): Promise<Array<Course>>;
     getGalleryImages(): Promise<Array<GalleryImage>>;
+    getHomePageContent(isPreview: boolean): Promise<HomePageContent>;
     getInternationalInquiries(): Promise<Array<InternationalInquiry>>;
     getReviewImages(): Promise<Array<ReviewImage>>;
     getSubmittedReviews(): Promise<Array<SubmittedReview>>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
+    publishHomePageContent(): Promise<void>;
     removeCourse(id: string): Promise<void>;
     removeGalleryImage(id: string): Promise<void>;
     removeReviewImage(id: string): Promise<void>;
@@ -183,6 +193,7 @@ export interface backendInterface {
     submitInternationalInquiry(id: string, name: string, email: string, message: string, country: string): Promise<void>;
     submitReview(id: string, name: string | null, content: string, rating: bigint): Promise<void>;
     updateContactInfo(phone: string, instagram: string, branches: Array<string>, ownerName: string, email: string, facebook: string, whatsapp: string): Promise<void>;
+    updateHomePageContent(newContent: HomePageContent): Promise<void>;
 }
 import type { Course as _Course, CourseCategory as _CourseCategory, ExternalBlob as _ExternalBlob, GalleryImage as _GalleryImage, ReviewImage as _ReviewImage, SubmittedReview as _SubmittedReview, UserProfile as _UserProfile, UserRole as _UserRole, _CaffeineStorageRefillInformation as __CaffeineStorageRefillInformation, _CaffeineStorageRefillResult as __CaffeineStorageRefillResult } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
@@ -439,6 +450,20 @@ export class Backend implements backendInterface {
             return from_candid_vec_n25(this._uploadFile, this._downloadFile, result);
         }
     }
+    async getHomePageContent(arg0: boolean): Promise<HomePageContent> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getHomePageContent(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getHomePageContent(arg0);
+            return result;
+        }
+    }
     async getInternationalInquiries(): Promise<Array<InternationalInquiry>> {
         if (this.processError) {
             try {
@@ -506,6 +531,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.isCallerAdmin();
+            return result;
+        }
+    }
+    async publishHomePageContent(): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.publishHomePageContent();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.publishHomePageContent();
             return result;
         }
     }
@@ -604,6 +643,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.updateContactInfo(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+            return result;
+        }
+    }
+    async updateHomePageContent(arg0: HomePageContent): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.updateHomePageContent(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.updateHomePageContent(arg0);
             return result;
         }
     }

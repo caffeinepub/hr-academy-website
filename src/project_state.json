@@ -1,18 +1,32 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "New project",
+  "summary": "Website admin panel with editable content sections, gallery management, and improved preview/publish workflow.",
   "architectural_notes": [],
-  "known_issues": [
-    "Image under the “Our Mission” heading is not loading for the user."
-  ],
-  "isFixRequest": true,
+  "known_issues": [],
+  "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-add-resilient-client-side-error-handling-for-the-mission-section-image-element-so-that-if-the-image-fails-to-load-the-ui-shows-a-clear-in-page-fallback-message-english-instead-of-a-broken-image",
-      "title": "Add resilient client-side error handling for the Mission section image element so that if the image fails to load, the UI shows a clear in-page fallback message (English) instead of a broken image.",
+      "id": "feature-add-backend-data-models-and-apis-to-support-admin-editable-page-content-for-all-sections-referenced-in-the-admin-guide-home-page-content-mission-section-testimonials-reviews-headings-content-blocks-and-any-about-contact-text-blocks-so-that-these-sections-are-no-longer-hard-coded-in-the-frontend",
+      "title": "Add backend data models and APIs to support admin-editable page content for all sections referenced in the admin guide (Home page content, Mission section, Testimonials/Reviews headings/content blocks, and any About/Contact text blocks), so that these sections are no longer hard-coded in the frontend.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-extend-the-admin-panel-ui-to-include-dedicated-editing-forms-for-each-newly-supported-editable-section-at-minimum-home-hero-headline-subheadline-description-mission-title-body-text-reviews-testimonials-section-heading-text-contact-page-intro-text-with-save-actions-that-persist-to-the-backend-draft-content-apis",
+      "title": "Extend the Admin Panel UI to include dedicated editing forms for each newly supported editable section (at minimum: Home hero headline/subheadline/description, Mission title/body text, Reviews/Testimonials section heading text, Contact page intro text), with Save actions that persist to the backend draft content APIs.",
       "reqIds": [
         "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-simple-easy-to-manage-preview-workflow-allow-admins-to-preview-draft-content-on-public-pages-without-publishing-using-a-url-based-preview-mode-that-can-be-toggled-from-the-admin-panel-via-a-clearly-visible-preview-button",
+      "title": "Implement a simple, easy-to-manage Preview workflow: allow admins to preview draft content on public pages without publishing, using a URL-based preview mode that can be toggled from the Admin Panel via a clearly visible Preview button.",
+      "reqIds": [
+        "REQ-3"
       ],
       "version": 1
     }
@@ -20,14 +34,26 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Ensure the Mission section image loads correctly under the “Our Mission” heading on the Home page by verifying the static asset exists at the exact path referenced by `MISSION_IMAGE_PATH` and is served by the frontend build.",
+      "summary": "Make all mentioned site sections editable in the admin area (home content, mission, testimonials, about/contact, and other page sections).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Add/Improve an easy-to-manage Preview button for admins to preview changes before publishing.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "If the backend state schema changes are required to store new draft/published site content, add a safe Motoko upgrade path that preserves existing canister data (courses, gallery images, review images, submitted reviews, contact info, profiles, inquiries) during upgrades.",
       "reqIds": [
-        "REQ-1"
+        "REQ-4"
       ],
       "status": "pending"
     }
   ],
-  "projectName": "Fix missing Mission image under “Our Mission” section",
+  "projectName": "Make all mentioned website sections editable in Admin and add an easy Preview workflow",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

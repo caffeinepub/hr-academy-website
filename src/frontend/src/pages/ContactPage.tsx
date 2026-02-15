@@ -5,9 +5,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Phone, MapPin, Mail, Globe, Clock, MessageCircle } from 'lucide-react';
 import { SiInstagram, SiFacebook } from 'react-icons/si';
-import { useSubmitInternationalInquiry, useGetContactInfo } from '@/hooks/useQueries';
+import { useSubmitInternationalInquiry, useGetContactInfo, useGetHomePageContent } from '@/hooks/useQueries';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { usePreviewMode } from '@/hooks/usePreviewMode';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -17,8 +18,10 @@ export default function ContactPage() {
     country: '',
   });
 
+  const { canPreview } = usePreviewMode();
   const submitInternationalInquiry = useSubmitInternationalInquiry();
   const { data: contactInfo } = useGetContactInfo();
+  const { data: pageContent } = useGetHomePageContent(canPreview);
 
   const whatsappUrl = contactInfo?.whatsapp || 'https://wa.me/917799151318';
   const facebookUrl = contactInfo?.facebook || 'https://www.facebook.com/profile.php?id=61567195800253';
@@ -78,7 +81,7 @@ export default function ContactPage() {
             Get in <span className="text-accent-red">Touch</span>
           </h1>
           <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-            Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
+            {pageContent?.contactText || 'Have questions? We\'d love to hear from you. Send us a message and we\'ll respond as soon as possible.'}
           </p>
         </div>
 

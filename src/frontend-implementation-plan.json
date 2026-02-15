@@ -1,41 +1,109 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Fix missing Mission image asset and add Mission image fallback UI",
+  "title": "Admin-editable site sections with URL-based preview mode",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Ensure the Mission section image static asset exists at the exact MISSION_IMAGE_PATH and is served by the frontend build.",
+      "summary": "Render Home/Mission/Testimonials/About/Contact text blocks from backend-provided site content rather than hard-coded strings.",
       "acceptanceCriteria": [
-        "The file `frontend/public/assets/generated/img-20260210-wa0017-uploaded.dim_1536x307.jpg` exists in the repo and is included in the deployed frontend build output as a static asset.",
-        "Requesting `GET /assets/generated/img-20260210-wa0017-uploaded.dim_1536x307.jpg` returns HTTP 200 and the image bytes.",
-        "The image renders on the Home page Mission section without broken-image behavior."
+        "Frontend no longer hard-codes the editable text blocks for the targeted sections; instead it renders them from fetched site content data.",
+        "Non-admin users can only access published content."
       ],
       "file_operations": [
         {
-          "path": "frontend/public/assets/generated/img-20260210-wa0017-uploaded.dim_1536x307.jpg",
-          "operation": "create",
-          "description": "Add the uploaded Mission image file at the exact path referenced by `MISSION_IMAGE_PATH` so the bundler serves it as a static asset. IMPORTANT: do not modify/recompress/resize/convert/rename the image bytes; place the file exactly as-is at this path."
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Add React Query hooks for site content: fetching `getHomePageContent(isPreview)` and mutating `updateHomePageContent(...)` / `publishHomePageContent()`, with stable query keys and invalidation. Verify the component's usage instructions before implementing."
         },
         {
-          "path": "frontend/src/constants/missionAssets.ts",
+          "path": "frontend/src/pages/HomePage.tsx",
           "operation": "modify",
-          "description": "Verify `MISSION_IMAGE_PATH` remains the single source of truth and matches `/assets/generated/img-20260210-wa0017-uploaded.dim_1536x307.jpg` exactly (including casing and leading slash)."
+          "description": "Replace hard-coded hero subtitle/description, Mission title/body, and Testimonials section heading with values loaded from the site-content query (published by default; preview handled by REQ-3). Keep existing non-editable sections (highlights, gallery, review submission) unchanged. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/ContactPage.tsx",
+          "operation": "modify",
+          "description": "Replace the hard-coded Contact intro paragraph text block with the backend-provided site content (published by default; preview handled by REQ-3), while keeping the contact form and contact-info rendering unchanged. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/Footer.tsx",
+          "operation": "modify",
+          "description": "Replace the hard-coded Footer 'About' blurb with backend-provided site content (e.g., `aboutText`) while keeping dynamic contact info unchanged. Verify the component's usage instructions before implementing."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Add client-side error handling so the Mission image shows an in-page English fallback message if it fails to load.",
+      "summary": "Extend Admin Panel with dedicated editors for each site-content section, saving to backend draft content and refetching on success.",
       "acceptanceCriteria": [
-        "If the Mission image fails to load (e.g., by temporarily changing `MISSION_IMAGE_PATH` to an invalid path), the Home page displays a visible fallback message in place of the image.",
-        "If the Mission image loads successfully, no fallback message is shown and the layout remains unchanged."
+        "Admin page contains clear, labeled inputs for each editable section covered by REQ-1.",
+        "Each section editor has an explicit Save action and shows success/error toasts on completion/failure.",
+        "Saving updates invalidate/refetch the relevant React Query keys so the Admin UI immediately reflects the saved draft state.",
+        "The existing admin functionality (courses, gallery, review screenshots, contact info, submitted reviews) continues to work unchanged."
       ],
       "file_operations": [
         {
+          "path": "frontend/src/pages/AdminPage.tsx",
+          "operation": "modify",
+          "description": "Add a new Admin tab/section for 'Site Content' with labeled inputs for: Home hero headline/title (`heroTitle`), subheadline (`heroSubtitle`), hero description, Mission title/body, Testimonials heading, Contact intro text, and About text. Wire Save to `updateHomePageContent(...)` and add a 'Publish' action calling `publishHomePageContent()` (if available) with success/error toasts. Ensure existing Admin tabs continue to function unchanged. Use shadcn-ui form components (e.g., Tabs, Card, Input, Textarea, Button, Label) for consistent UI; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Add mutations used by Admin 'Site Content' editors (update draft + publish), including React Query invalidation/refetch for both draft/preview and published queries. Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Implement URL-based preview mode controllable from Admin, showing draft content only to authenticated admins with an easy exit control.",
+      "acceptanceCriteria": [
+        "Admin Panel provides a prominent Preview button (or a small set of Preview buttons per page) that opens the selected page in preview mode (e.g., with a query parameter like preview=1).",
+        "When preview mode is active and the viewer is an authenticated admin, pages render draft content instead of published content for the sections in REQ-1.",
+        "When preview mode is active but the viewer is not an authenticated admin, the app falls back to published content (no draft leakage).",
+        "Preview mode is easy to exit (e.g., a visible “Exit preview” control that removes/ignores preview mode)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/usePreviewMode.ts",
+          "operation": "create",
+          "description": "Create a small hook to detect preview mode from the URL (e.g., `preview=1`) and expose helpers for building preview URLs and exiting preview (removing/ignoring preview param). Leverage existing URL param helpers where appropriate. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/utils/urlParams.ts",
+          "operation": "modify",
+          "description": "Add a utility to remove a standard query parameter from the current URL (not just hash secrets), to support an 'Exit preview' control that cleans up `preview=1` without a full reload. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/PreviewBanner.tsx",
+          "operation": "create",
+          "description": "Add a small banner component that appears when preview mode is active and the viewer is an authenticated admin, showing 'Preview mode' and an 'Exit preview' button that clears the preview param. Use shadcn-ui Button (and optionally Alert/Card styling) for consistent UI; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/Layout.tsx",
+          "operation": "modify",
+          "description": "Wire the PreviewBanner into the app layout so it is visible across public pages during preview mode, without adding new routes. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/AdminPage.tsx",
+          "operation": "modify",
+          "description": "Add a prominent Preview button (or per-page buttons) that opens Home and Contact pages in preview mode by appending `preview=1` to the URL. Keep the existing admin flows unchanged. Use shadcn-ui Button for the control; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Ensure site-content fetching supports a preview flag (query key includes preview state) and only requests preview/draft content when preview mode is active AND the viewer is an authenticated admin; otherwise fetch published content. Verify the component's usage instructions before implementing."
+        },
+        {
           "path": "frontend/src/pages/HomePage.tsx",
           "operation": "modify",
-          "description": "Update the Mission section `<img>` to track load errors (e.g., via React state + `onError`) and conditionally render a clear in-page English fallback message in place of the image when loading fails, while keeping the current layout unchanged when the image loads successfully."
+          "description": "Use preview-mode detection and admin status to decide whether to request draft content or published content for editable sections, with safe fallback to published content when not admin. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/ContactPage.tsx",
+          "operation": "modify",
+          "description": "Use preview-mode detection and admin status to decide whether to request draft content or published content for editable sections, with safe fallback to published content when not admin. Verify the component's usage instructions before implementing."
         }
       ]
     }

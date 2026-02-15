@@ -35,6 +35,14 @@ export interface GalleryImage {
   'caption' : string,
   'image' : ExternalBlob,
 }
+export interface HomePageContent {
+  'missionStatement' : string,
+  'contactText' : string,
+  'heroSubtitle' : string,
+  'aboutText' : string,
+  'testimonialsHeading' : string,
+  'heroTitle' : string,
+}
 export interface InternationalInquiry {
   'country' : string,
   'name' : string,
@@ -101,11 +109,13 @@ export interface _SERVICE {
   'getContactInfo' : ActorMethod<[], ContactInfo>,
   'getCourses' : ActorMethod<[], Array<Course>>,
   'getGalleryImages' : ActorMethod<[], Array<GalleryImage>>,
+  'getHomePageContent' : ActorMethod<[boolean], HomePageContent>,
   'getInternationalInquiries' : ActorMethod<[], Array<InternationalInquiry>>,
   'getReviewImages' : ActorMethod<[], Array<ReviewImage>>,
   'getSubmittedReviews' : ActorMethod<[], Array<SubmittedReview>>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
+  'publishHomePageContent' : ActorMethod<[], undefined>,
   'removeCourse' : ActorMethod<[string], undefined>,
   'removeGalleryImage' : ActorMethod<[string], undefined>,
   'removeReviewImage' : ActorMethod<[string], undefined>,
@@ -122,6 +132,7 @@ export interface _SERVICE {
     [string, string, Array<string>, string, string, string, string],
     undefined
   >,
+  'updateHomePageContent' : ActorMethod<[HomePageContent], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

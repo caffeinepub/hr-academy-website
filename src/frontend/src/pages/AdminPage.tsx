@@ -7,22 +7,26 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Progress } from '@/components/ui/progress';
 import { useInternetIdentity } from '@/hooks/useInternetIdentity';
-import { useGetCallerUserProfile, useIsCallerAdmin, useAddOrUpdateCourse, useRemoveCourse, useAddOrUpdateGalleryImage, useRemoveGalleryImage, useUpdateContactInfo, useGetCourses, useGetGalleryImages, useGetContactInfo, useAddReviewImage, useRemoveReviewImage, useGetReviewImages, useGetAllSubmittedReviews, useDeleteReview } from '@/hooks/useQueries';
+import { useGetCallerUserProfile, useIsCallerAdmin, useAddOrUpdateCourse, useRemoveCourse, useAddOrUpdateGalleryImage, useRemoveGalleryImage, useUpdateContactInfo, useGetCourses, useGetGalleryImages, useGetContactInfo, useAddReviewImage, useRemoveReviewImage, useGetReviewImages, useGetAllSubmittedReviews, useDeleteReview, useGetHomePageContent, useUpdateHomePageContent, usePublishHomePageContent } from '@/hooks/useQueries';
 import { CourseCategory, ExternalBlob } from '@/backend';
 import { toast } from 'sonner';
-import { Trash2, Upload, Settings, BookOpen, Image as ImageIcon, Phone, Shield, Loader2, Star as StarIcon } from 'lucide-react';
-import LoginButton from '@/components/LoginButton';
+import { Trash2, Plus, Upload, BookOpen, Image, Users, Settings, FileText, Eye, Save, CheckCircle, Star } from 'lucide-react';
+import { usePreviewMode } from '@/hooks/usePreviewMode';
 
 export default function AdminPage() {
-  const { identity, isInitializing } = useInternetIdentity();
-  const { data: userProfile, isLoading: profileLoading, isFetched } = useGetCallerUserProfile();
-  const { data: isAdmin, isLoading: adminLoading } = useIsCallerAdmin();
+  const { identity } = useInternetIdentity();
+  const { data: userProfile } = useGetCallerUserProfile();
+  const { data: isAdmin = false } = useIsCallerAdmin();
+  const { enterPreview } = usePreviewMode();
+
   const { data: courses = [] } = useGetCourses();
   const { data: galleryImages = [] } = useGetGalleryImages();
   const { data: contactInfo } = useGetContactInfo();
   const { data: reviewImages = [] } = useGetReviewImages();
   const { data: submittedReviews = [] } = useGetAllSubmittedReviews();
+  const { data: draftContent } = useGetHomePageContent(true);
 
   const addOrUpdateCourse = useAddOrUpdateCourse();
   const removeCourse = useRemoveCourse();
@@ -32,163 +36,189 @@ export default function AdminPage() {
   const addReviewImage = useAddReviewImage();
   const removeReviewImage = useRemoveReviewImage();
   const deleteReview = useDeleteReview();
+  const updateHomePageContent = useUpdateHomePageContent();
+  const publishHomePageContent = usePublishHomePageContent();
 
   const [courseForm, setCourseForm] = useState({
     id: '',
     name: '',
-    category: '' as CourseCategory | '',
+    category: 'Intermediate' as CourseCategory,
     description: '',
-  });
-
-  const [galleryForm, setGalleryForm] = useState({
-    id: '',
-    caption: '',
-    imageFile: null as File | null,
-  });
-
-  const [reviewImageForm, setReviewImageForm] = useState({
-    id: '',
-    caption: '',
-    imageFile: null as File | null,
   });
 
   const [contactForm, setContactForm] = useState({
     phone: '',
     instagram: '',
-    branches: '',
+    branches: ['', ''],
     ownerName: '',
     email: '',
     facebook: '',
     whatsapp: '',
   });
 
-  const isAuthenticated = !!identity;
-  const showProfileSetup = isAuthenticated && !profileLoading && isFetched && userProfile === null;
-  const isLoading = isInitializing || profileLoading || adminLoading;
+  const [contentForm, setContentForm] = useState({
+    heroTitle: '',
+    heroSubtitle: '',
+    missionStatement: '',
+    testimonialsHeading: '',
+    aboutText: '',
+    contactText: '',
+  });
 
-  // Update contact form when contactInfo loads
+  const [galleryUploadProgress, setGalleryUploadProgress] = useState<number | null>(null);
+  const [reviewUploadProgress, setReviewUploadProgress] = useState<number | null>(null);
+
   useEffect(() => {
     if (contactInfo) {
       setContactForm({
         phone: contactInfo.phone,
         instagram: contactInfo.instagram,
-        branches: contactInfo.branches.join('\n'),
+        branches: contactInfo.branches.length > 0 ? contactInfo.branches : ['', ''],
         ownerName: contactInfo.ownerName,
-        email: contactInfo.email || 'hracademy2305@gmail.com',
-        facebook: contactInfo.facebook || 'https://www.facebook.com/profile.php?id=61567195800253',
-        whatsapp: contactInfo.whatsapp || 'https://wa.me/917799151318',
+        email: contactInfo.email,
+        facebook: contactInfo.facebook,
+        whatsapp: contactInfo.whatsapp,
       });
     }
   }, [contactInfo]);
 
+  useEffect(() => {
+    if (draftContent) {
+      setContentForm({
+        heroTitle: draftContent.heroTitle,
+        heroSubtitle: draftContent.heroSubtitle,
+        missionStatement: draftContent.missionStatement,
+        testimonialsHeading: draftContent.testimonialsHeading,
+        aboutText: draftContent.aboutText,
+        contactText: draftContent.contactText,
+      });
+    }
+  }, [draftContent]);
+
+  if (!identity) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black flex items-center justify-center p-4">
+        <Card className="bg-gray-800 border-accent-red/20 max-w-md w-full">
+          <CardHeader>
+            <CardTitle className="text-white text-center">Admin Access Required</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-400 text-center">Please log in to access the admin panel.</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black flex items-center justify-center p-4">
+        <Card className="bg-gray-800 border-accent-red/20 max-w-md w-full">
+          <CardHeader>
+            <CardTitle className="text-white text-center">Access Denied</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-400 text-center">You do not have permission to access this page.</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   const handleAddCourse = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!courseForm.name || !courseForm.category || !courseForm.description) {
-      toast.error('Please fill in all course fields');
-      return;
-    }
-
     try {
       const id = courseForm.id || `course-${Date.now()}`;
-      await addOrUpdateCourse.mutateAsync({
-        id,
-        name: courseForm.name,
-        category: courseForm.category as CourseCategory,
-        description: courseForm.description,
-      });
+      await addOrUpdateCourse.mutateAsync({ ...courseForm, id });
       toast.success('Course saved successfully');
-      setCourseForm({ id: '', name: '', category: '', description: '' });
+      setCourseForm({ id: '', name: '', category: 'Intermediate' as CourseCategory, description: '' });
     } catch (error) {
       toast.error('Failed to save course');
     }
   };
 
-  const handleDeleteCourse = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this course?')) return;
-    
+  const handleRemoveCourse = async (id: string) => {
     try {
       await removeCourse.mutateAsync(id);
-      toast.success('Course deleted successfully');
+      toast.success('Course removed successfully');
     } catch (error) {
-      toast.error('Failed to delete course');
+      toast.error('Failed to remove course');
     }
   };
 
-  const handleAddGalleryImage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!galleryForm.caption || !galleryForm.imageFile) {
-      toast.error('Please provide both image and caption');
-      return;
-    }
+  const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
 
-    try {
-      const id = galleryForm.id || `gallery-${Date.now()}`;
-      const arrayBuffer = await galleryForm.imageFile.arrayBuffer();
-      const uint8Array = new Uint8Array(arrayBuffer);
-      const blob = ExternalBlob.fromBytes(uint8Array);
+    for (const file of Array.from(files)) {
+      try {
+        const bytes = new Uint8Array(await file.arrayBuffer());
+        const blob = ExternalBlob.fromBytes(bytes).withUploadProgress((percentage) => {
+          setGalleryUploadProgress(percentage);
+        });
 
-      await addOrUpdateGalleryImage.mutateAsync({
-        id,
-        image: blob,
-        caption: galleryForm.caption,
-      });
-      toast.success('Gallery image uploaded successfully');
-      setGalleryForm({ id: '', caption: '', imageFile: null });
-    } catch (error) {
-      toast.error('Failed to upload gallery image');
+        const id = `gallery-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        await addOrUpdateGalleryImage.mutateAsync({
+          id,
+          image: blob,
+          caption: file.name,
+        });
+        toast.success(`${file.name} uploaded successfully`);
+      } catch (error) {
+        toast.error(`Failed to upload ${file.name}`);
+      } finally {
+        setGalleryUploadProgress(null);
+      }
     }
+    e.target.value = '';
   };
 
-  const handleDeleteGalleryImage = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this image?')) return;
-    
+  const handleRemoveGalleryImage = async (id: string) => {
     try {
       await removeGalleryImage.mutateAsync(id);
-      toast.success('Gallery image deleted successfully');
+      toast.success('Image removed successfully');
     } catch (error) {
-      toast.error('Failed to delete gallery image');
+      toast.error('Failed to remove image');
     }
   };
 
-  const handleAddReviewImage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!reviewImageForm.caption || !reviewImageForm.imageFile) {
-      toast.error('Please provide both image and caption');
-      return;
-    }
+  const handleReviewImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
 
-    try {
-      const id = reviewImageForm.id || `review-${Date.now()}`;
-      const arrayBuffer = await reviewImageForm.imageFile.arrayBuffer();
-      const uint8Array = new Uint8Array(arrayBuffer);
-      const blob = ExternalBlob.fromBytes(uint8Array);
+    for (const file of Array.from(files)) {
+      try {
+        const bytes = new Uint8Array(await file.arrayBuffer());
+        const blob = ExternalBlob.fromBytes(bytes).withUploadProgress((percentage) => {
+          setReviewUploadProgress(percentage);
+        });
 
-      await addReviewImage.mutateAsync({
-        id,
-        image: blob,
-        caption: reviewImageForm.caption,
-      });
-      toast.success('Review screenshot uploaded successfully');
-      setReviewImageForm({ id: '', caption: '', imageFile: null });
-    } catch (error) {
-      toast.error('Failed to upload review screenshot');
+        const id = `review-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        await addReviewImage.mutateAsync({
+          id,
+          image: blob,
+          caption: file.name,
+        });
+        toast.success(`${file.name} uploaded successfully`);
+      } catch (error) {
+        toast.error(`Failed to upload ${file.name}`);
+      } finally {
+        setReviewUploadProgress(null);
+      }
     }
+    e.target.value = '';
   };
 
-  const handleDeleteReviewImage = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this review screenshot?')) return;
-    
+  const handleRemoveReviewImage = async (id: string) => {
     try {
       await removeReviewImage.mutateAsync(id);
-      toast.success('Review screenshot deleted successfully');
+      toast.success('Review image removed successfully');
     } catch (error) {
-      toast.error('Failed to delete review screenshot');
+      toast.error('Failed to remove review image');
     }
   };
 
-  const handleDeleteSubmittedReview = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this review?')) return;
-    
+  const handleDeleteReview = async (id: string) => {
     try {
       await deleteReview.mutateAsync(id);
       toast.success('Review deleted successfully');
@@ -199,21 +229,10 @@ export default function AdminPage() {
 
   const handleUpdateContactInfo = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!contactForm.phone || !contactForm.instagram || !contactForm.ownerName) {
-      toast.error('Please fill in all required contact fields');
-      return;
-    }
-
     try {
-      const branches = contactForm.branches.split('\n').filter(b => b.trim());
       await updateContactInfo.mutateAsync({
-        phone: contactForm.phone,
-        instagram: contactForm.instagram,
-        branches,
-        ownerName: contactForm.ownerName,
-        email: contactForm.email,
-        facebook: contactForm.facebook,
-        whatsapp: contactForm.whatsapp,
+        ...contactForm,
+        branches: contactForm.branches.filter(b => b.trim() !== ''),
       });
       toast.success('Contact information updated successfully');
     } catch (error) {
@@ -221,337 +240,427 @@ export default function AdminPage() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black flex items-center justify-center">
-        <Loader2 className="h-8 w-8 text-accent-red animate-spin" />
-      </div>
-    );
-  }
+  const handleSaveContent = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await updateHomePageContent.mutateAsync(contentForm);
+      toast.success('Content saved as draft');
+    } catch (error) {
+      toast.error('Failed to save content');
+    }
+  };
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black flex items-center justify-center">
-        <Card className="bg-gray-800 border-accent-red/20 max-w-md w-full">
-          <CardHeader>
-            <CardTitle className="text-white text-2xl flex items-center gap-2">
-              <Shield className="h-6 w-6 text-accent-red" />
-              Admin Access Required
-            </CardTitle>
-            <CardDescription className="text-gray-400">
-              Please log in to access the admin panel
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <LoginButton />
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  if (!isAdmin) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black flex items-center justify-center">
-        <Card className="bg-gray-800 border-accent-red/20 max-w-md w-full">
-          <CardHeader>
-            <CardTitle className="text-white text-2xl">Access Denied</CardTitle>
-            <CardDescription className="text-gray-400">
-              You do not have permission to access this page
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Alert className="bg-gray-900 border-accent-red/20">
-              <AlertDescription className="text-gray-300">
-                Only administrators can access the admin panel. Please contact the site owner if you believe this is an error.
-              </AlertDescription>
-            </Alert>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  const handlePublishContent = async () => {
+    try {
+      await publishHomePageContent.mutateAsync();
+      toast.success('Content published successfully');
+    } catch (error) {
+      toast.error('Failed to publish content');
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black py-16">
-      <div className="container max-w-6xl">
+    <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black py-8">
+      <div className="container">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-white mb-2">
-            Admin <span className="text-accent-red">Panel</span>
+            Admin <span className="text-accent-red">Dashboard</span>
           </h1>
-          <p className="text-gray-400">Manage your HR Academy website content</p>
+          {userProfile && (
+            <p className="text-gray-400">Welcome back, {userProfile.name}</p>
+          )}
         </div>
 
-        <Tabs defaultValue="courses" className="space-y-6">
+        <Tabs defaultValue="content" className="space-y-6">
           <TabsList className="bg-gray-800 border border-accent-red/20">
+            <TabsTrigger value="content" className="data-[state=active]:bg-accent-red data-[state=active]:text-white">
+              <FileText className="h-4 w-4 mr-2" />
+              Site Content
+            </TabsTrigger>
             <TabsTrigger value="courses" className="data-[state=active]:bg-accent-red data-[state=active]:text-white">
               <BookOpen className="h-4 w-4 mr-2" />
               Courses
             </TabsTrigger>
             <TabsTrigger value="gallery" className="data-[state=active]:bg-accent-red data-[state=active]:text-white">
-              <ImageIcon className="h-4 w-4 mr-2" />
+              <Image className="h-4 w-4 mr-2" />
               Gallery
             </TabsTrigger>
             <TabsTrigger value="reviews" className="data-[state=active]:bg-accent-red data-[state=active]:text-white">
-              <StarIcon className="h-4 w-4 mr-2" />
+              <Star className="h-4 w-4 mr-2" />
               Reviews
             </TabsTrigger>
-            <TabsTrigger value="contact" className="data-[state=active]:bg-accent-red data-[state=active]:text-white">
-              <Phone className="h-4 w-4 mr-2" />
-              Contact Info
+            <TabsTrigger value="submitted" className="data-[state=active]:bg-accent-red data-[state=active]:text-white">
+              <Users className="h-4 w-4 mr-2" />
+              Submitted Reviews
             </TabsTrigger>
-            <TabsTrigger value="guide" className="data-[state=active]:bg-accent-red data-[state=active]:text-white">
+            <TabsTrigger value="contact" className="data-[state=active]:bg-accent-red data-[state=active]:text-white">
               <Settings className="h-4 w-4 mr-2" />
-              Owner Guide
+              Contact Info
             </TabsTrigger>
           </TabsList>
 
-          {/* Courses Tab */}
-          <TabsContent value="courses" className="space-y-6">
+          {/* Site Content Tab */}
+          <TabsContent value="content">
             <Card className="bg-gray-800 border-accent-red/20">
               <CardHeader>
-                <CardTitle className="text-white">Add/Edit Course</CardTitle>
+                <CardTitle className="text-white">Edit Site Content</CardTitle>
                 <CardDescription className="text-gray-400">
-                  Only add courses for Intermediate and Competitive/Entrance exams
+                  Update the text content across your website. Changes are saved as drafts and can be previewed before publishing.
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleAddCourse} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="course-name" className="text-white">Course Name</Label>
-                    <Input
-                      id="course-name"
-                      placeholder="e.g., Mathematics"
-                      value={courseForm.name}
-                      onChange={(e) => setCourseForm({ ...courseForm, name: e.target.value })}
-                      className="bg-gray-900 border-accent-red/20 text-white"
-                    />
+                <form onSubmit={handleSaveContent} className="space-y-6">
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="heroTitle" className="text-white">Hero Title</Label>
+                      <Input
+                        id="heroTitle"
+                        value={contentForm.heroTitle}
+                        onChange={(e) => setContentForm({ ...contentForm, heroTitle: e.target.value })}
+                        className="bg-gray-900 border-accent-red/20 text-white"
+                        placeholder="e.g., Welcome to HR Academy"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="heroSubtitle" className="text-white">Hero Subtitle</Label>
+                      <Input
+                        id="heroSubtitle"
+                        value={contentForm.heroSubtitle}
+                        onChange={(e) => setContentForm({ ...contentForm, heroSubtitle: e.target.value })}
+                        className="bg-gray-900 border-accent-red/20 text-white"
+                        placeholder="e.g., Trusted by 6000+ parents worldwide"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="missionStatement" className="text-white">Mission Statement</Label>
+                      <Textarea
+                        id="missionStatement"
+                        value={contentForm.missionStatement}
+                        onChange={(e) => setContentForm({ ...contentForm, missionStatement: e.target.value })}
+                        className="bg-gray-900 border-accent-red/20 text-white"
+                        rows={5}
+                        placeholder="Describe your academy's mission..."
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="testimonialsHeading" className="text-white">Testimonials Section Heading</Label>
+                      <Input
+                        id="testimonialsHeading"
+                        value={contentForm.testimonialsHeading}
+                        onChange={(e) => setContentForm({ ...contentForm, testimonialsHeading: e.target.value })}
+                        className="bg-gray-900 border-accent-red/20 text-white"
+                        placeholder="e.g., What Our Students Say"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="aboutText" className="text-white">About Text (Footer)</Label>
+                      <Textarea
+                        id="aboutText"
+                        value={contentForm.aboutText}
+                        onChange={(e) => setContentForm({ ...contentForm, aboutText: e.target.value })}
+                        className="bg-gray-900 border-accent-red/20 text-white"
+                        rows={3}
+                        placeholder="Brief description for footer..."
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="contactText" className="text-white">Contact Page Intro</Label>
+                      <Textarea
+                        id="contactText"
+                        value={contentForm.contactText}
+                        onChange={(e) => setContentForm({ ...contentForm, contactText: e.target.value })}
+                        className="bg-gray-900 border-accent-red/20 text-white"
+                        rows={3}
+                        placeholder="Introduction text for contact page..."
+                      />
+                    </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="course-category" className="text-white">Category</Label>
-                    <Select value={courseForm.category} onValueChange={(value) => setCourseForm({ ...courseForm, category: value as CourseCategory })}>
-                      <SelectTrigger className="bg-gray-900 border-accent-red/20 text-white">
-                        <SelectValue placeholder="Select category" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-gray-900 border-accent-red/20">
-                        <SelectItem value={CourseCategory.Intermediate}>Intermediate</SelectItem>
-                        <SelectItem value={CourseCategory.Engineering}>Engineering Entrance</SelectItem>
-                        <SelectItem value={CourseCategory.Pharmacy}>Pharmacy Entrance</SelectItem>
-                        <SelectItem value={CourseCategory.EntranceExam}>Competitive Exams</SelectItem>
-                      </SelectContent>
-                    </Select>
+
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <Button 
+                      type="submit" 
+                      className="bg-accent-red hover:bg-accent-red/90 text-white flex-1"
+                      disabled={updateHomePageContent.isPending}
+                    >
+                      <Save className="h-4 w-4 mr-2" />
+                      {updateHomePageContent.isPending ? 'Saving...' : 'Save Draft'}
+                    </Button>
+                    <Button 
+                      type="button"
+                      onClick={handlePublishContent}
+                      className="bg-green-600 hover:bg-green-700 text-white flex-1"
+                      disabled={publishHomePageContent.isPending}
+                    >
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                      {publishHomePageContent.isPending ? 'Publishing...' : 'Publish Changes'}
+                    </Button>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="course-description" className="text-white">Description</Label>
-                    <Textarea
-                      id="course-description"
-                      placeholder="Course description"
-                      value={courseForm.description}
-                      onChange={(e) => setCourseForm({ ...courseForm, description: e.target.value })}
-                      className="bg-gray-900 border-accent-red/20 text-white"
-                    />
+
+                  <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-accent-red/20">
+                    <Button 
+                      type="button"
+                      variant="outline"
+                      onClick={() => enterPreview('/')}
+                      className="border-accent-red text-accent-red hover:bg-accent-red hover:text-white flex-1"
+                    >
+                      <Eye className="h-4 w-4 mr-2" />
+                      Preview Home Page
+                    </Button>
+                    <Button 
+                      type="button"
+                      variant="outline"
+                      onClick={() => enterPreview('/contact')}
+                      className="border-accent-red text-accent-red hover:bg-accent-red hover:text-white flex-1"
+                    >
+                      <Eye className="h-4 w-4 mr-2" />
+                      Preview Contact Page
+                    </Button>
                   </div>
-                  <Button type="submit" className="bg-accent-red hover:bg-accent-red/90 text-white" disabled={addOrUpdateCourse.isPending}>
-                    {addOrUpdateCourse.isPending ? 'Saving...' : 'Save Course'}
-                  </Button>
                 </form>
               </CardContent>
             </Card>
+          </TabsContent>
 
-            <Card className="bg-gray-800 border-accent-red/20">
-              <CardHeader>
-                <CardTitle className="text-white">Existing Courses</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {courses.map((course) => (
-                    <div key={course.id} className="flex items-center justify-between p-3 bg-gray-900 rounded-lg">
-                      <div>
-                        <p className="text-white font-medium">{course.name}</p>
-                        <p className="text-sm text-gray-400">{course.category}</p>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDeleteCourse(course.id)}
-                        className="text-accent-red hover:bg-accent-red/10"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+          {/* Courses Tab */}
+          <TabsContent value="courses">
+            <div className="grid gap-6 lg:grid-cols-2">
+              <Card className="bg-gray-800 border-accent-red/20">
+                <CardHeader>
+                  <CardTitle className="text-white">Add/Edit Course</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleAddCourse} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="courseName" className="text-white">Course Name</Label>
+                      <Input
+                        id="courseName"
+                        value={courseForm.name}
+                        onChange={(e) => setCourseForm({ ...courseForm, name: e.target.value })}
+                        className="bg-gray-900 border-accent-red/20 text-white"
+                        required
+                      />
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                    <div className="space-y-2">
+                      <Label htmlFor="courseCategory" className="text-white">Category</Label>
+                      <Select
+                        value={courseForm.category}
+                        onValueChange={(value) => setCourseForm({ ...courseForm, category: value as CourseCategory })}
+                      >
+                        <SelectTrigger className="bg-gray-900 border-accent-red/20 text-white">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Intermediate">Intermediate</SelectItem>
+                          <SelectItem value="Engineering">Engineering</SelectItem>
+                          <SelectItem value="Pharmacy">Pharmacy</SelectItem>
+                          <SelectItem value="EntranceExam">Entrance Exam</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="courseDescription" className="text-white">Description</Label>
+                      <Textarea
+                        id="courseDescription"
+                        value={courseForm.description}
+                        onChange={(e) => setCourseForm({ ...courseForm, description: e.target.value })}
+                        className="bg-gray-900 border-accent-red/20 text-white"
+                        rows={3}
+                        required
+                      />
+                    </div>
+                    <Button type="submit" className="w-full bg-accent-red hover:bg-accent-red/90 text-white">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Course
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gray-800 border-accent-red/20">
+                <CardHeader>
+                  <CardTitle className="text-white">Existing Courses</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {courses.length === 0 ? (
+                    <p className="text-gray-400 text-center py-8">No courses added yet</p>
+                  ) : (
+                    <div className="space-y-3">
+                      {courses.map((course) => (
+                        <div key={course.id} className="flex items-start justify-between p-3 bg-gray-900 rounded-lg">
+                          <div className="flex-1">
+                            <h4 className="text-white font-medium">{course.name}</h4>
+                            <p className="text-sm text-gray-400">{course.category}</p>
+                          </div>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleRemoveCourse(course.id)}
+                            className="text-accent-red hover:bg-accent-red/10"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           {/* Gallery Tab */}
-          <TabsContent value="gallery" className="space-y-6">
+          <TabsContent value="gallery">
             <Card className="bg-gray-800 border-accent-red/20">
               <CardHeader>
-                <CardTitle className="text-white">Upload Gallery Image</CardTitle>
+                <CardTitle className="text-white">Gallery Management</CardTitle>
               </CardHeader>
-              <CardContent>
-                <form onSubmit={handleAddGalleryImage} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="gallery-image" className="text-white">Image File</Label>
-                    <Input
-                      id="gallery-image"
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => setGalleryForm({ ...galleryForm, imageFile: e.target.files?.[0] || null })}
-                      className="bg-gray-900 border-accent-red/20 text-white"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="gallery-caption" className="text-white">Caption</Label>
-                    <Input
-                      id="gallery-caption"
-                      placeholder="Image caption"
-                      value={galleryForm.caption}
-                      onChange={(e) => setGalleryForm({ ...galleryForm, caption: e.target.value })}
-                      className="bg-gray-900 border-accent-red/20 text-white"
-                    />
-                  </div>
-                  <Button type="submit" className="bg-accent-red hover:bg-accent-red/90 text-white" disabled={addOrUpdateGalleryImage.isPending}>
-                    <Upload className="h-4 w-4 mr-2" />
-                    {addOrUpdateGalleryImage.isPending ? 'Uploading...' : 'Upload Image'}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
+              <CardContent className="space-y-6">
+                <div>
+                  <Label htmlFor="galleryUpload" className="text-white mb-2 block">Upload Images</Label>
+                  <Input
+                    id="galleryUpload"
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleGalleryUpload}
+                    className="bg-gray-900 border-accent-red/20 text-white"
+                  />
+                  {galleryUploadProgress !== null && (
+                    <div className="mt-2">
+                      <Progress value={galleryUploadProgress} className="h-2" />
+                      <p className="text-sm text-gray-400 mt-1">Uploading: {galleryUploadProgress}%</p>
+                    </div>
+                  )}
+                </div>
 
-            <Card className="bg-gray-800 border-accent-red/20">
-              <CardHeader>
-                <CardTitle className="text-white">Gallery Images</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {galleryImages.map((image) => (
-                    <div key={image.id} className="relative group">
-                      <img
-                        src={image.image.getDirectURL()}
-                        alt={image.caption}
-                        className="w-full h-40 object-cover rounded-lg"
-                      />
-                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                {galleryImages.length === 0 ? (
+                  <Alert className="bg-gray-900 border-accent-red/20">
+                    <AlertDescription className="text-gray-400">
+                      No images in gallery yet. Upload some images to get started.
+                    </AlertDescription>
+                  </Alert>
+                ) : (
+                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    {galleryImages.map((image) => (
+                      <div key={image.id} className="relative group">
+                        <img
+                          src={image.image.getDirectURL()}
+                          alt={image.caption}
+                          className="w-full h-48 object-cover rounded-lg"
+                        />
                         <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDeleteGalleryImage(image.id)}
-                          className="text-accent-red hover:bg-accent-red/10"
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleRemoveGalleryImage(image.id)}
+                          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
                         >
-                          <Trash2 className="h-5 w-5" />
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
-                      <p className="text-xs text-gray-400 mt-1">{image.caption}</p>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
 
-          {/* Reviews Tab */}
-          <TabsContent value="reviews" className="space-y-6">
-            <Card className="bg-gray-800 border-accent-red/20">
-              <CardHeader>
-                <CardTitle className="text-white">Upload Review Screenshot</CardTitle>
-                <CardDescription className="text-gray-400">
-                  Upload screenshots of reviews from social media or other platforms
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleAddReviewImage} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="review-image" className="text-white">Screenshot File</Label>
-                    <Input
-                      id="review-image"
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => setReviewImageForm({ ...reviewImageForm, imageFile: e.target.files?.[0] || null })}
-                      className="bg-gray-900 border-accent-red/20 text-white"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="review-caption" className="text-white">Caption (Optional)</Label>
-                    <Input
-                      id="review-caption"
-                      placeholder="e.g., Review from Instagram"
-                      value={reviewImageForm.caption}
-                      onChange={(e) => setReviewImageForm({ ...reviewImageForm, caption: e.target.value })}
-                      className="bg-gray-900 border-accent-red/20 text-white"
-                    />
-                  </div>
-                  <Button type="submit" className="bg-accent-red hover:bg-accent-red/90 text-white" disabled={addReviewImage.isPending}>
-                    <Upload className="h-4 w-4 mr-2" />
-                    {addReviewImage.isPending ? 'Uploading...' : 'Upload Screenshot'}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-
+          {/* Review Screenshots Tab */}
+          <TabsContent value="reviews">
             <Card className="bg-gray-800 border-accent-red/20">
               <CardHeader>
                 <CardTitle className="text-white">Review Screenshots</CardTitle>
+                <CardDescription className="text-gray-400">
+                  Upload screenshots of student reviews from social media or other platforms
+                </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {reviewImages.map((review) => (
-                    <div key={review.id} className="relative group">
-                      <img
-                        src={review.image.getDirectURL()}
-                        alt={review.caption}
-                        className="w-full h-40 object-cover rounded-lg"
-                      />
-                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+              <CardContent className="space-y-6">
+                <div>
+                  <Label htmlFor="reviewUpload" className="text-white mb-2 block">Upload Review Images</Label>
+                  <Input
+                    id="reviewUpload"
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleReviewImageUpload}
+                    className="bg-gray-900 border-accent-red/20 text-white"
+                  />
+                  {reviewUploadProgress !== null && (
+                    <div className="mt-2">
+                      <Progress value={reviewUploadProgress} className="h-2" />
+                      <p className="text-sm text-gray-400 mt-1">Uploading: {reviewUploadProgress}%</p>
+                    </div>
+                  )}
+                </div>
+
+                {reviewImages.length === 0 ? (
+                  <Alert className="bg-gray-900 border-accent-red/20">
+                    <AlertDescription className="text-gray-400">
+                      No review screenshots uploaded yet.
+                    </AlertDescription>
+                  </Alert>
+                ) : (
+                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    {reviewImages.map((review) => (
+                      <div key={review.id} className="relative group">
+                        <img
+                          src={review.image.getDirectURL()}
+                          alt={review.caption}
+                          className="w-full h-48 object-cover rounded-lg"
+                        />
                         <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDeleteReviewImage(review.id)}
-                          className="text-accent-red hover:bg-accent-red/10"
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleRemoveReviewImage(review.id)}
+                          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
                         >
-                          <Trash2 className="h-5 w-5" />
+                          <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
-                      {review.caption && (
-                        <p className="text-xs text-gray-400 mt-1">{review.caption}</p>
-                      )}
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
+          </TabsContent>
 
+          {/* Submitted Reviews Tab */}
+          <TabsContent value="submitted">
             <Card className="bg-gray-800 border-accent-red/20">
               <CardHeader>
-                <CardTitle className="text-white">Submitted Reviews</CardTitle>
+                <CardTitle className="text-white">User Submitted Reviews</CardTitle>
                 <CardDescription className="text-gray-400">
-                  Reviews submitted by visitors through the website
+                  Manage reviews submitted by users through the website
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
-                  {submittedReviews.length === 0 ? (
-                    <p className="text-gray-400 text-center py-4">No reviews submitted yet</p>
-                  ) : (
-                    submittedReviews.map((review) => (
-                      <div key={review.id} className="p-4 bg-gray-900 rounded-lg space-y-2">
-                        <div className="flex items-center justify-between">
+                {submittedReviews.length === 0 ? (
+                  <Alert className="bg-gray-900 border-accent-red/20">
+                    <AlertDescription className="text-gray-400">
+                      No reviews submitted yet.
+                    </AlertDescription>
+                  </Alert>
+                ) : (
+                  <div className="space-y-3">
+                    {submittedReviews.map((review) => (
+                      <div key={review.id} className="p-4 bg-gray-900 rounded-lg">
+                        <div className="flex items-start justify-between mb-2">
                           <div>
-                            <p className="text-white font-medium">
-                              {review.name || 'Anonymous'}
-                            </p>
+                            <p className="text-white font-medium">{review.name || 'Anonymous'}</p>
                             <div className="flex items-center space-x-1 mt-1">
                               {Array.from({ length: Number(review.rating) }).map((_, i) => (
-                                <StarIcon key={i} className="h-4 w-4 fill-accent-red text-accent-red" />
+                                <Star key={i} className="h-4 w-4 fill-accent-red text-accent-red" />
                               ))}
                             </div>
                           </div>
                           <Button
+                            size="sm"
                             variant="ghost"
-                            size="icon"
-                            onClick={() => handleDeleteSubmittedReview(review.id)}
+                            onClick={() => handleDeleteReview(review.id)}
                             className="text-accent-red hover:bg-accent-red/10"
                           >
                             <Trash2 className="h-4 w-4" />
@@ -559,174 +668,105 @@ export default function AdminPage() {
                         </div>
                         <p className="text-gray-300 text-sm">{review.content}</p>
                       </div>
-                    ))
-                  )}
-                </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
 
           {/* Contact Info Tab */}
-          <TabsContent value="contact" className="space-y-6">
+          <TabsContent value="contact">
             <Card className="bg-gray-800 border-accent-red/20">
               <CardHeader>
-                <CardTitle className="text-white">Update Contact Information</CardTitle>
+                <CardTitle className="text-white">Contact Information</CardTitle>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleUpdateContactInfo} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="contact-phone" className="text-white">Phone Number</Label>
+                    <Label htmlFor="ownerName" className="text-white">Owner Name</Label>
                     <Input
-                      id="contact-phone"
-                      placeholder="+91 77991 51318"
-                      value={contactForm.phone}
-                      onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
-                      className="bg-gray-900 border-accent-red/20 text-white"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="contact-email" className="text-white">Email Address</Label>
-                    <Input
-                      id="contact-email"
-                      type="email"
-                      placeholder="hracademy2305@gmail.com"
-                      value={contactForm.email}
-                      onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
-                      className="bg-gray-900 border-accent-red/20 text-white"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="contact-whatsapp" className="text-white">WhatsApp URL</Label>
-                    <Input
-                      id="contact-whatsapp"
-                      placeholder="https://wa.me/917799151318"
-                      value={contactForm.whatsapp}
-                      onChange={(e) => setContactForm({ ...contactForm, whatsapp: e.target.value })}
-                      className="bg-gray-900 border-accent-red/20 text-white"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="contact-instagram" className="text-white">Instagram Handle</Label>
-                    <Input
-                      id="contact-instagram"
-                      placeholder="@hr_academy_knr"
-                      value={contactForm.instagram}
-                      onChange={(e) => setContactForm({ ...contactForm, instagram: e.target.value })}
-                      className="bg-gray-900 border-accent-red/20 text-white"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="contact-facebook" className="text-white">Facebook Page URL</Label>
-                    <Input
-                      id="contact-facebook"
-                      placeholder="https://www.facebook.com/profile.php?id=61567195800253"
-                      value={contactForm.facebook}
-                      onChange={(e) => setContactForm({ ...contactForm, facebook: e.target.value })}
-                      className="bg-gray-900 border-accent-red/20 text-white"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="contact-owner" className="text-white">Owner/Director Name</Label>
-                    <Input
-                      id="contact-owner"
-                      placeholder="Haqeeb Raja Bahmood"
+                      id="ownerName"
                       value={contactForm.ownerName}
                       onChange={(e) => setContactForm({ ...contactForm, ownerName: e.target.value })}
                       className="bg-gray-900 border-accent-red/20 text-white"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="contact-branches" className="text-white">Branch Locations (one per line)</Label>
-                    <Textarea
-                      id="contact-branches"
-                      placeholder="Enter each branch address on a new line"
-                      rows={4}
-                      value={contactForm.branches}
-                      onChange={(e) => setContactForm({ ...contactForm, branches: e.target.value })}
+                    <Label htmlFor="phone" className="text-white">Phone</Label>
+                    <Input
+                      id="phone"
+                      value={contactForm.phone}
+                      onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
                       className="bg-gray-900 border-accent-red/20 text-white"
                     />
                   </div>
-                  <Button type="submit" className="bg-accent-red hover:bg-accent-red/90 text-white" disabled={updateContactInfo.isPending}>
-                    {updateContactInfo.isPending ? 'Updating...' : 'Update Contact Info'}
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-white">Email</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={contactForm.email}
+                      onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
+                      className="bg-gray-900 border-accent-red/20 text-white"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="instagram" className="text-white">Instagram Handle</Label>
+                    <Input
+                      id="instagram"
+                      value={contactForm.instagram}
+                      onChange={(e) => setContactForm({ ...contactForm, instagram: e.target.value })}
+                      className="bg-gray-900 border-accent-red/20 text-white"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="facebook" className="text-white">Facebook URL</Label>
+                    <Input
+                      id="facebook"
+                      value={contactForm.facebook}
+                      onChange={(e) => setContactForm({ ...contactForm, facebook: e.target.value })}
+                      className="bg-gray-900 border-accent-red/20 text-white"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="whatsapp" className="text-white">WhatsApp URL</Label>
+                    <Input
+                      id="whatsapp"
+                      value={contactForm.whatsapp}
+                      onChange={(e) => setContactForm({ ...contactForm, whatsapp: e.target.value })}
+                      className="bg-gray-900 border-accent-red/20 text-white"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-white">Branch Locations</Label>
+                    {contactForm.branches.map((branch, index) => (
+                      <Input
+                        key={index}
+                        value={branch}
+                        onChange={(e) => {
+                          const newBranches = [...contactForm.branches];
+                          newBranches[index] = e.target.value;
+                          setContactForm({ ...contactForm, branches: newBranches });
+                        }}
+                        className="bg-gray-900 border-accent-red/20 text-white"
+                        placeholder={`Branch ${index + 1} address`}
+                      />
+                    ))}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setContactForm({ ...contactForm, branches: [...contactForm.branches, ''] })}
+                      className="w-full border-accent-red text-accent-red hover:bg-accent-red hover:text-white"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Branch
+                    </Button>
+                  </div>
+                  <Button type="submit" className="w-full bg-accent-red hover:bg-accent-red/90 text-white">
+                    Update Contact Information
                   </Button>
                 </form>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Owner Guide Tab */}
-          <TabsContent value="guide" className="space-y-6">
-            <Card className="bg-gray-800 border-accent-red/20">
-              <CardHeader>
-                <CardTitle className="text-white">Owner Management Guide</CardTitle>
-                <CardDescription className="text-gray-400">
-                  Instructions for managing your HR Academy website
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6 text-gray-300">
-                <div>
-                  <h3 className="text-lg font-semibold text-white mb-2 flex items-center gap-2">
-                    <BookOpen className="h-5 w-5 text-accent-red" />
-                    Managing Courses
-                  </h3>
-                  <ul className="list-disc list-inside space-y-1 text-sm">
-                    <li>Go to the "Courses" tab to add new courses or edit existing ones</li>
-                    <li>Only add courses for Intermediate and Competitive/Entrance exams</li>
-                    <li>Fill in the course name, select a category, and provide a description</li>
-                    <li>Click "Save Course" to add it to your website</li>
-                    <li>To delete a course, click the trash icon next to it in the list</li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-semibold text-white mb-2 flex items-center gap-2">
-                    <ImageIcon className="h-5 w-5 text-accent-red" />
-                    Managing Gallery
-                  </h3>
-                  <ul className="list-disc list-inside space-y-1 text-sm">
-                    <li>Go to the "Gallery" tab to upload new images</li>
-                    <li>Select an image file from your computer</li>
-                    <li>Add a caption describing the image</li>
-                    <li>Click "Upload Image" to add it to your gallery</li>
-                    <li>To delete an image, hover over it and click the trash icon</li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-semibold text-white mb-2 flex items-center gap-2">
-                    <StarIcon className="h-5 w-5 text-accent-red" />
-                    Managing Reviews
-                  </h3>
-                  <ul className="list-disc list-inside space-y-1 text-sm">
-                    <li>Go to the "Reviews" tab to manage review content</li>
-                    <li>Upload screenshots of reviews from social media or other platforms</li>
-                    <li>View reviews submitted by visitors through the website form</li>
-                    <li>Reviews can be submitted anonymously or with a name</li>
-                    <li>To delete a review screenshot, hover over it and click the trash icon</li>
-                    <li>To delete a submitted review, click the trash icon next to it</li>
-                  </ul>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-semibold text-white mb-2 flex items-center gap-2">
-                    <Phone className="h-5 w-5 text-accent-red" />
-                    Updating Contact Information
-                  </h3>
-                  <ul className="list-disc list-inside space-y-1 text-sm">
-                    <li>Go to the "Contact Info" tab to update your contact details</li>
-                    <li>Update phone, email, WhatsApp URL, Instagram, and Facebook</li>
-                    <li>Add or modify branch locations (one per line)</li>
-                    <li>Click "Update Contact Info" to save changes</li>
-                    <li>Changes will appear on the homepage, footer, and contact page</li>
-                  </ul>
-                </div>
-
-                <Alert className="bg-gray-900 border-accent-red/20">
-                  <AlertDescription className="text-gray-300">
-                    <strong className="text-white">Note:</strong> This admin panel is only accessible to logged-in administrators. 
-                    Keep your login credentials secure and do not share them with unauthorized users.
-                  </AlertDescription>
-                </Alert>
               </CardContent>
             </Card>
           </TabsContent>

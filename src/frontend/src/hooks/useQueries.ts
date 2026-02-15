@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
 import { useInternetIdentity } from './useInternetIdentity';
-import type { Course, GalleryImage, ContactInfo, UserProfile, CourseCategory, ExternalBlob, ReviewImage, SubmittedReview } from '@/backend';
+import type { Course, GalleryImage, ContactInfo, UserProfile, CourseCategory, ExternalBlob, ReviewImage, SubmittedReview, HomePageContent } from '@/backend';
 
 export function useGetCourses() {
   const { actor, isFetching } = useActor();
@@ -268,6 +268,50 @@ export function useUpdateContactInfo() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contactInfo'] });
+    },
+  });
+}
+
+// Home Page Content queries
+export function useGetHomePageContent(isPreview: boolean) {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<HomePageContent>({
+    queryKey: ['homePageContent', isPreview],
+    queryFn: async () => {
+      if (!actor) throw new Error('Actor not initialized');
+      return actor.getHomePageContent(isPreview);
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useUpdateHomePageContent() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (content: HomePageContent) => {
+      if (!actor) throw new Error('Actor not initialized');
+      await actor.updateHomePageContent(content);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['homePageContent', true] });
+    },
+  });
+}
+
+export function usePublishHomePageContent() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      if (!actor) throw new Error('Actor not initialized');
+      await actor.publishHomePageContent();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['homePageContent'] });
     },
   });
 }

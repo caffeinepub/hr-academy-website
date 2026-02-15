@@ -1,9 +1,9 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useNavigate } from '@tanstack/react-router';
-import { GraduationCap, Award, Users, BookOpen, UserCheck, Star, ImageOff } from 'lucide-react';
+import { GraduationCap, Award, Users, BookOpen, UserCheck, Star } from 'lucide-react';
 import { SiWhatsapp } from 'react-icons/si';
-import { useGetContactInfo, useGetReviewImages, useSubmitReview, useGetSubmittedReviews } from '@/hooks/useQueries';
+import { useGetContactInfo, useGetReviewImages, useSubmitReview, useGetSubmittedReviews, useGetHomePageContent } from '@/hooks/useQueries';
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -11,13 +11,16 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import BrandLogo from '@/components/BrandLogo';
-import { MISSION_IMAGE_PATH } from '@/constants/missionAssets';
+import HomeGallerySection from '@/components/HomeGallerySection';
+import { usePreviewMode } from '@/hooks/usePreviewMode';
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const { canPreview } = usePreviewMode();
   const { data: contactInfo } = useGetContactInfo();
   const { data: reviewImages = [] } = useGetReviewImages();
   const { data: submittedReviews = [] } = useGetSubmittedReviews();
+  const { data: pageContent } = useGetHomePageContent(canPreview);
   const submitReview = useSubmitReview();
 
   const [reviewForm, setReviewForm] = useState({
@@ -26,8 +29,6 @@ export default function HomePage() {
     rating: 5,
     anonymous: false,
   });
-
-  const [missionImageError, setMissionImageError] = useState(false);
 
   const highlights = [
     {
@@ -95,10 +96,10 @@ export default function HomePage() {
               />
             </div>
             <h1 className="text-5xl md:text-7xl font-normal tracking-wider">
-              HR <span className="text-accent-red">ACADEMY</span>
+              {pageContent?.heroTitle || 'HR ACADEMY'}
             </h1>
             <p className="text-2xl md:text-3xl font-semibold text-accent-red">
-              Trusted by 6000+ parents worldwide
+              {pageContent?.heroSubtitle || 'Trusted by 6000+ parents worldwide'}
             </p>
             {contactInfo?.ownerName && (
               <p className="text-sm md:text-base text-gray-400 mt-3 founder-name">
@@ -159,48 +160,24 @@ export default function HomePage() {
             <h2 className="text-3xl md:text-4xl font-bold text-white text-center">
               Our <span className="text-accent-red">Mission</span>
             </h2>
-            
-            <div className="max-w-5xl mx-auto">
-              {!missionImageError ? (
-                <img 
-                  src={MISSION_IMAGE_PATH}
-                  alt="HR Academy Students and Faculty" 
-                  className="w-full h-auto"
-                  onError={() => setMissionImageError(true)}
-                />
-              ) : (
-                <div className="w-full bg-gray-800 border border-accent-red/20 rounded-lg p-12 flex flex-col items-center justify-center space-y-4">
-                  <ImageOff className="h-16 w-16 text-accent-red/50" />
-                  <p className="text-gray-400 text-center text-lg">
-                    Mission image is currently unavailable. Please check back later.
-                  </p>
-                </div>
-              )}
-            </div>
 
             <div className="max-w-3xl mx-auto space-y-4 text-center">
-              <p className="text-lg text-gray-300">
-                At HR Academy, we are committed to providing exceptional education that transforms lives. 
-                Our mission is to nurture academic excellence while building confidence and character in every student.
-              </p>
-              <p className="text-lg text-gray-300">
-                With experienced faculty, proven teaching methodologies, and a student-centric approach, 
-                we ensure that each learner receives the guidance and support needed to achieve their goals.
-              </p>
-              <p className="text-lg text-gray-300">
-                We believe quality education should be accessible to all, which is why we offer very affordable fees 
-                without compromising on the excellence of our teaching and resources.
+              <p className="text-lg text-gray-300 whitespace-pre-wrap">
+                {pageContent?.missionStatement || 'At HR Academy, we are committed to providing exceptional education that transforms lives. Our mission is to nurture academic excellence while building confidence and character in every student.'}
               </p>
             </div>
           </div>
         </div>
       </section>
 
+      {/* Gallery Section */}
+      <HomeGallerySection />
+
       {/* Reviews Section */}
       <section className="py-16 bg-black">
         <div className="container">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-white">
-            What Our <span className="text-accent-red">Students Say</span>
+            {pageContent?.testimonialsHeading || 'What Our Students Say'}
           </h2>
 
           {/* Review Screenshots */}
@@ -264,12 +241,10 @@ export default function HomePage() {
 
                 {!reviewForm.anonymous && (
                   <div className="space-y-2">
-                    <Label htmlFor="review-name" className="text-white">
-                      Your Name (Optional)
-                    </Label>
+                    <Label htmlFor="name" className="text-white">Name (Optional)</Label>
                     <Input
-                      id="review-name"
-                      placeholder="Enter your name"
+                      id="name"
+                      placeholder="Your name"
                       value={reviewForm.name}
                       onChange={(e) => setReviewForm({ ...reviewForm, name: e.target.value })}
                       className="bg-gray-900 border-accent-red/20 text-white placeholder:text-gray-500"
@@ -278,20 +253,18 @@ export default function HomePage() {
                 )}
 
                 <div className="space-y-2">
-                  <Label htmlFor="review-rating" className="text-white">
-                    Rating
-                  </Label>
+                  <Label htmlFor="rating" className="text-white">Rating</Label>
                   <div className="flex items-center space-x-2">
-                    {[1, 2, 3, 4, 5].map((star) => (
+                    {[1, 2, 3, 4, 5].map((rating) => (
                       <button
-                        key={star}
+                        key={rating}
                         type="button"
-                        onClick={() => setReviewForm({ ...reviewForm, rating: star })}
+                        onClick={() => setReviewForm({ ...reviewForm, rating })}
                         className="focus:outline-none"
                       >
                         <Star
                           className={`h-6 w-6 ${
-                            star <= reviewForm.rating
+                            rating <= reviewForm.rating
                               ? 'fill-accent-red text-accent-red'
                               : 'text-gray-600'
                           }`}
@@ -302,12 +275,10 @@ export default function HomePage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="review-content" className="text-white">
-                    Your Review
-                  </Label>
+                  <Label htmlFor="content" className="text-white">Your Review</Label>
                   <Textarea
-                    id="review-content"
-                    placeholder="Share your experience with HR Academy..."
+                    id="content"
+                    placeholder="Share your experience..."
                     rows={4}
                     value={reviewForm.content}
                     onChange={(e) => setReviewForm({ ...reviewForm, content: e.target.value })}
@@ -316,8 +287,8 @@ export default function HomePage() {
                   />
                 </div>
 
-                <Button
-                  type="submit"
+                <Button 
+                  type="submit" 
                   className="w-full bg-accent-red hover:bg-accent-red/90 text-white"
                   disabled={submitReview.isPending}
                 >
@@ -330,20 +301,20 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-gray-900">
+      <section className="py-16 bg-gradient-to-b from-black to-gray-900">
         <div className="container text-center space-y-6">
           <h2 className="text-3xl md:text-4xl font-bold text-white">
-            Ready to Start Your <span className="text-accent-red">Success Journey</span>?
+            Ready to Start Your <span className="text-accent-red">Journey</span>?
           </h2>
           <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-            Join hundreds of successful students who have achieved their academic goals with HR Academy
+            Join thousands of successful students who have achieved their academic goals with HR Academy
           </p>
           <Button 
             size="lg" 
             className="bg-accent-red hover:bg-accent-red/90 text-white"
             onClick={() => navigate({ to: '/contact' })}
           >
-            Get Started Today
+            Contact Us Today
           </Button>
         </div>
       </section>

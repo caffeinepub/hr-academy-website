@@ -1,10 +1,10 @@
 import Map "mo:core/Map";
-import Iter "mo:core/Iter";
 import Array "mo:core/Array";
+import Iter "mo:core/Iter";
 import Principal "mo:core/Principal";
 import Order "mo:core/Order";
 import Runtime "mo:core/Runtime";
-
+import Migration "migration";
 
 import MixinAuthorization "authorization/MixinAuthorization";
 import Storage "blob-storage/Storage";
@@ -12,8 +12,25 @@ import MixinStorage "blob-storage/Mixin";
 import AccessControl "authorization/access-control";
 
 // Apply migration
-
+(with migration = Migration.run)
 actor {
+  // Page content types
+  public type HomePageContent = {
+    heroTitle : Text;
+    heroSubtitle : Text;
+    missionStatement : Text;
+    testimonialsHeading : Text;
+    aboutText : Text;
+    contactText : Text;
+  };
+
+  // Preview workflow state
+  public type PreviewState<T> = {
+    draft : T;
+    published : T;
+    isPreviewMode : Bool;
+  };
+
   // Course Types
   type CourseCategory = {
     #Intermediate;
@@ -126,6 +143,27 @@ actor {
   // Access control state
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
+
+  // Home page content with preview workflow
+  var homePageContent : PreviewState<HomePageContent> = {
+    draft = {
+      heroTitle = "Welcome to HR Academy";
+      heroSubtitle = "Your path to success starts here";
+      missionStatement = "Empowering students with quality education";
+      testimonialsHeading = "What Our Students Say";
+      aboutText = "Learn more about our mission and values.";
+      contactText = "Get in touch with us today.";
+    };
+    published = {
+      heroTitle = "Welcome to HR Academy";
+      heroSubtitle = "Your path to success starts here";
+      missionStatement = "Empowering students with quality education";
+      testimonialsHeading = "What Our Students Say";
+      aboutText = "Learn more about our mission and values.";
+      contactText = "Get in touch with us today.";
+    };
+    isPreviewMode = false;
+  };
 
   // User Profile Management
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
@@ -277,20 +315,47 @@ actor {
     submittedReviews.values().toArray();
   };
 
-  // Public query functions
+  // Page Content Management
+  public query func getHomePageContent(isPreview : Bool) : async HomePageContent {
+    if (isPreview) {
+      homePageContent.draft;
+    } else {
+      homePageContent.published;
+    };
+  };
+
+  public shared ({ caller }) func updateHomePageContent(newContent : HomePageContent) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admin can update home page content");
+    };
+    // Update draft content only
+    homePageContent := {
+      homePageContent with
+      draft = newContent;
+    };
+  };
+
+  public shared ({ caller }) func publishHomePageContent() : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admin can publish home page content");
+    };
+    // Publish draft content
+    homePageContent := {
+      homePageContent with
+      published = homePageContent.draft
+    };
+  };
+
+  // Public query functions for core data
   public query func getCourses() : async [Course] {
-    // No authorization check - public access
     courses.values().toArray().sort();
   };
 
   public query func getGalleryImages() : async [GalleryImage] {
-    // No authorization check - public access
     galleryImages.values().toArray();
   };
 
   public query func getContactInfo() : async ContactInfo {
-    // No authorization check - public access
     contactInfo;
   };
 };
-

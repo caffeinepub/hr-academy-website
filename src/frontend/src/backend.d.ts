@@ -14,27 +14,32 @@ export class ExternalBlob {
     static fromBytes(blob: Uint8Array<ArrayBuffer>): ExternalBlob;
     withUploadProgress(onProgress: (percentage: number) => void): ExternalBlob;
 }
+export interface HomePageContent {
+    missionStatement: string;
+    contactText: string;
+    heroSubtitle: string;
+    aboutText: string;
+    testimonialsHeading: string;
+    heroTitle: string;
+}
+export interface ReviewImage {
+    id: string;
+    caption: string;
+    image: ExternalBlob;
+}
+export interface InternationalInquiry {
+    country: string;
+    name: string;
+    email: string;
+    message: string;
+}
 export interface Course {
     id: string;
     name: string;
     description: string;
     category: CourseCategory;
 }
-export interface ContactInfo {
-    ownerName: string;
-    instagram: string;
-    whatsapp: string;
-    email: string;
-    facebook: string;
-    phone: string;
-    branches: Array<string>;
-}
 export interface GalleryImage {
-    id: string;
-    caption: string;
-    image: ExternalBlob;
-}
-export interface ReviewImage {
     id: string;
     caption: string;
     image: ExternalBlob;
@@ -45,11 +50,14 @@ export interface SubmittedReview {
     name?: string;
     rating: bigint;
 }
-export interface InternationalInquiry {
-    country: string;
-    name: string;
+export interface ContactInfo {
+    ownerName: string;
+    instagram: string;
+    whatsapp: string;
     email: string;
-    message: string;
+    facebook: string;
+    phone: string;
+    branches: Array<string>;
 }
 export interface UserProfile {
     name: string;
@@ -78,11 +86,13 @@ export interface backendInterface {
     getContactInfo(): Promise<ContactInfo>;
     getCourses(): Promise<Array<Course>>;
     getGalleryImages(): Promise<Array<GalleryImage>>;
+    getHomePageContent(isPreview: boolean): Promise<HomePageContent>;
     getInternationalInquiries(): Promise<Array<InternationalInquiry>>;
     getReviewImages(): Promise<Array<ReviewImage>>;
     getSubmittedReviews(): Promise<Array<SubmittedReview>>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
+    publishHomePageContent(): Promise<void>;
     removeCourse(id: string): Promise<void>;
     removeGalleryImage(id: string): Promise<void>;
     removeReviewImage(id: string): Promise<void>;
@@ -90,4 +100,5 @@ export interface backendInterface {
     submitInternationalInquiry(id: string, name: string, email: string, message: string, country: string): Promise<void>;
     submitReview(id: string, name: string | null, content: string, rating: bigint): Promise<void>;
     updateContactInfo(phone: string, instagram: string, branches: Array<string>, ownerName: string, email: string, facebook: string, whatsapp: string): Promise<void>;
+    updateHomePageContent(newContent: HomePageContent): Promise<void>;
 }

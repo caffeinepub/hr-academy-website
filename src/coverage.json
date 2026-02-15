@@ -1,43 +1,96 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-12T13:36:40.827Z",
+  "generatedAt": "2026-02-15T15:54:02.988Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 2,
-    "implemented": 1,
+    "total": 4,
+    "implemented": 3,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Ensure the Mission section image loads correctly under the “Our Mission” heading on the Home page by verifying the static asset exists at the exact path referenced by `MISSION_IMAGE_PATH` and is served by the frontend build.",
-        "status": "missing",
+        "summary": "Add backend data models and APIs to support admin-editable page content for all sections referenced in the admin guide (Home page content, Mission section, Testimonials/Reviews headings/content blocks, and any About/Contact text blocks), so that these sections are no longer hard-coded in the frontend.",
+        "status": "implemented",
         "plannedFiles": [
-          "frontend/public/assets/generated/img-20260210-wa0017-uploaded.dim_1536x307.jpg",
-          "frontend/src/constants/missionAssets.ts"
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/pages/HomePage.tsx",
+          "frontend/src/pages/ContactPage.tsx",
+          "frontend/src/components/Footer.tsx"
         ],
-        "matchedFiles": []
+        "matchedFiles": [
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/pages/HomePage.tsx",
+          "frontend/src/pages/ContactPage.tsx",
+          "frontend/src/components/Footer.tsx"
+        ]
       },
       {
         "id": "REQ-2",
-        "summary": "Add resilient client-side error handling for the Mission section image element so that if the image fails to load, the UI shows a clear in-page fallback message (English) instead of a broken image.",
+        "summary": "Extend the Admin Panel UI to include dedicated editing forms for each newly supported editable section (at minimum: Home hero headline/subheadline/description, Mission title/body text, Reviews/Testimonials section heading text, Contact page intro text), with Save actions that persist to the backend draft content APIs.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/HomePage.tsx"
+          "frontend/src/pages/AdminPage.tsx",
+          "frontend/src/hooks/useQueries.ts"
         ],
         "matchedFiles": [
-          "frontend/src/pages/HomePage.tsx"
+          "frontend/src/pages/AdminPage.tsx",
+          "frontend/src/hooks/useQueries.ts"
         ]
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Implement a simple, easy-to-manage Preview workflow: allow admins to preview draft content on public pages without publishing, using a URL-based preview mode that can be toggled from the Admin Panel via a clearly visible Preview button.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/usePreviewMode.ts",
+          "frontend/src/utils/urlParams.ts",
+          "frontend/src/components/PreviewBanner.tsx",
+          "frontend/src/components/Layout.tsx",
+          "frontend/src/pages/AdminPage.tsx",
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/pages/HomePage.tsx",
+          "frontend/src/pages/ContactPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/hooks/usePreviewMode.ts",
+          "frontend/src/components/PreviewBanner.tsx",
+          "frontend/src/components/Layout.tsx",
+          "frontend/src/pages/AdminPage.tsx",
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/pages/HomePage.tsx",
+          "frontend/src/pages/ContactPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-4",
+        "summary": "If the backend state schema changes are required to store new draft/published site content, add a safe Motoko upgrade path that preserves existing canister data (courses, gallery images, review images, submitted reviews, contact info, profiles, inquiries) during upgrades.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
+    "backend/migration.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/components/Footer.tsx",
+    "frontend/src/components/Layout.tsx",
+    "frontend/src/components/PreviewBanner.tsx",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/usePreviewMode.ts",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/pages/AdminPage.tsx",
+    "frontend/src/pages/ContactPage.tsx",
     "frontend/src/pages/HomePage.tsx",
     "project_state.json",
     "scratch/component-selection.json",
