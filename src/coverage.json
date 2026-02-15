@@ -1,96 +1,33 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-15T15:54:02.988Z",
+  "generatedAt": "2026-02-15T15:59:26.222Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 4,
-    "implemented": 3,
+    "total": 1,
+    "implemented": 1,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Add backend data models and APIs to support admin-editable page content for all sections referenced in the admin guide (Home page content, Mission section, Testimonials/Reviews headings/content blocks, and any About/Contact text blocks), so that these sections are no longer hard-coded in the frontend.",
+        "summary": "On the Home page hero section, remove the existing “Welcome to HR Academy” heading text and instead display “HR ACADEMY” as a two-part styled heading where “HR” is white and “ACADEMY” is red.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/pages/HomePage.tsx",
-          "frontend/src/pages/ContactPage.tsx",
-          "frontend/src/components/Footer.tsx"
+          "frontend/src/pages/HomePage.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/pages/HomePage.tsx",
-          "frontend/src/pages/ContactPage.tsx",
-          "frontend/src/components/Footer.tsx"
+          "frontend/src/pages/HomePage.tsx"
         ]
-      },
-      {
-        "id": "REQ-2",
-        "summary": "Extend the Admin Panel UI to include dedicated editing forms for each newly supported editable section (at minimum: Home hero headline/subheadline/description, Mission title/body text, Reviews/Testimonials section heading text, Contact page intro text), with Save actions that persist to the backend draft content APIs.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/AdminPage.tsx",
-          "frontend/src/hooks/useQueries.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/AdminPage.tsx",
-          "frontend/src/hooks/useQueries.ts"
-        ]
-      },
-      {
-        "id": "REQ-3",
-        "summary": "Implement a simple, easy-to-manage Preview workflow: allow admins to preview draft content on public pages without publishing, using a URL-based preview mode that can be toggled from the Admin Panel via a clearly visible Preview button.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/hooks/usePreviewMode.ts",
-          "frontend/src/utils/urlParams.ts",
-          "frontend/src/components/PreviewBanner.tsx",
-          "frontend/src/components/Layout.tsx",
-          "frontend/src/pages/AdminPage.tsx",
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/pages/HomePage.tsx",
-          "frontend/src/pages/ContactPage.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/hooks/usePreviewMode.ts",
-          "frontend/src/components/PreviewBanner.tsx",
-          "frontend/src/components/Layout.tsx",
-          "frontend/src/pages/AdminPage.tsx",
-          "frontend/src/hooks/useQueries.ts",
-          "frontend/src/pages/HomePage.tsx",
-          "frontend/src/pages/ContactPage.tsx"
-        ]
-      },
-      {
-        "id": "REQ-4",
-        "summary": "If the backend state schema changes are required to store new draft/published site content, add a safe Motoko upgrade path that preserves existing canister data (courses, gallery images, review images, submitted reviews, contact info, profiles, inquiries) during upgrades.",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
       }
     ]
   },
   "changedFiles": [
-    "backend/main.mo",
-    "backend/migration.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
-    "frontend/src/components/Footer.tsx",
-    "frontend/src/components/Layout.tsx",
-    "frontend/src/components/PreviewBanner.tsx",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
-    "frontend/src/hooks/usePreviewMode.ts",
-    "frontend/src/hooks/useQueries.ts",
-    "frontend/src/pages/AdminPage.tsx",
-    "frontend/src/pages/ContactPage.tsx",
     "frontend/src/pages/HomePage.tsx",
     "project_state.json",
     "scratch/component-selection.json",

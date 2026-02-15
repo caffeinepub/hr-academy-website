@@ -96,7 +96,8 @@ export default function HomePage() {
               />
             </div>
             <h1 className="text-5xl md:text-7xl font-normal tracking-wider">
-              {pageContent?.heroTitle || 'HR ACADEMY'}
+              <span className="text-white">HR </span>
+              <span className="text-accent-red">ACADEMY</span>
             </h1>
             <p className="text-2xl md:text-3xl font-semibold text-accent-red">
               {pageContent?.heroSubtitle || 'Trusted by 6000+ parents worldwide'}

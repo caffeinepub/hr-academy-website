@@ -2,12 +2,9 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-add-backend-data-models-and-apis-to-support-admin-editable-page-content-for-all-sections-referenced-in-the-admin-guide-home-page-content-mission-section-testimonials-reviews-headings-content-blocks-and-any-about-contact-text-blocks-so-that-these-sections-are-no-longer-hard-coded-in-the-frontend",
-      "featureTitle": "Add backend data models and APIs to support admin-editable page content for all sections referenced in the admin guide (Home page content, Mission section, Testimonials/Reviews headings/content blocks, and any About/Contact text blocks), so that these sections are no longer hard-coded in the frontend.",
+      "featureId": "feature-on-the-home-page-hero-section-remove-the-existing-welcome-to-hr-academy-heading-text-and-instead-display-hr-academy-as-a-two-part-styled-heading-where-hr-is-white-and-academy-is-red",
+      "featureTitle": "On the Home page hero section, remove the existing “Welcome to HR Academy” heading text and instead display “HR ACADEMY” as a two-part styled heading where “HR” is white and “ACADEMY” is red.",
       "files": [
-        "frontend/src/components/Footer.tsx",
-        "frontend/src/hooks/useQueries.ts",
-        "frontend/src/pages/ContactPage.tsx",
         "frontend/src/pages/HomePage.tsx"
       ],
       "components": [
@@ -21,53 +18,6 @@
       ],
       "testIds": [
         "REQ-1"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-extend-the-admin-panel-ui-to-include-dedicated-editing-forms-for-each-newly-supported-editable-section-at-minimum-home-hero-headline-subheadline-description-mission-title-body-text-reviews-testimonials-section-heading-text-contact-page-intro-text-with-save-actions-that-persist-to-the-backend-draft-content-apis",
-      "featureTitle": "Extend the Admin Panel UI to include dedicated editing forms for each newly supported editable section (at minimum: Home hero headline/subheadline/description, Mission title/body text, Reviews/Testimonials section heading text, Contact page intro text), with Save actions that persist to the backend draft content APIs.",
-      "files": [
-        "frontend/src/hooks/useQueries.ts",
-        "frontend/src/pages/AdminPage.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "blob-storage@4.0.0",
-        "authorization@4.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-2"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-implement-a-simple-easy-to-manage-preview-workflow-allow-admins-to-preview-draft-content-on-public-pages-without-publishing-using-a-url-based-preview-mode-that-can-be-toggled-from-the-admin-panel-via-a-clearly-visible-preview-button",
-      "featureTitle": "Implement a simple, easy-to-manage Preview workflow: allow admins to preview draft content on public pages without publishing, using a URL-based preview mode that can be toggled from the Admin Panel via a clearly visible Preview button.",
-      "files": [
-        "frontend/src/components/Layout.tsx",
-        "frontend/src/components/PreviewBanner.tsx",
-        "frontend/src/hooks/usePreviewMode.ts",
-        "frontend/src/hooks/useQueries.ts",
-        "frontend/src/pages/AdminPage.tsx",
-        "frontend/src/pages/ContactPage.tsx",
-        "frontend/src/pages/HomePage.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "blob-storage@4.0.0",
-        "authorization@4.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-3"
       ],
       "confidence": "high"
     }

@@ -1,92 +1,33 @@
 {
   "kind": "build_request",
-  "title": "Make all mentioned website sections editable in Admin and add an easy Preview workflow",
+  "title": "Update hero heading text to styled “HR ACADEMY”",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Add backend data models and APIs to support admin-editable page content for all sections referenced in the admin guide (Home page content, Mission section, Testimonials/Reviews headings/content blocks, and any About/Contact text blocks), so that these sections are no longer hard-coded in the frontend.",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-3"
-        ],
-        "quotes": [
-          "Make all the editable sections mentioned above editable and make preview button easy manageable"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Backend exposes query methods to fetch public (published) site content for each editable section.",
-        "Backend exposes admin-only methods to read and update draft site content for each editable section.",
-        "Frontend no longer hard-codes the editable text blocks for the targeted sections; instead it renders them from fetched site content data.",
-        "Non-admin users can only access published content."
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "text": "Extend the Admin Panel UI to include dedicated editing forms for each newly supported editable section (at minimum: Home hero headline/subheadline/description, Mission title/body text, Reviews/Testimonials section heading text, Contact page intro text), with Save actions that persist to the backend draft content APIs.",
+      "text": "On the Home page hero section, remove the existing “Welcome to HR Academy” heading text and instead display “HR ACADEMY” as a two-part styled heading where “HR” is white and “ACADEMY” is red.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-1"
         ],
         "quotes": [
-          "Make all the editable sections mentioned above editable and make preview button easy manageable"
+          "Remove \"Welcome to HR Academy \" and instead add \"HR ACADEMY \" where \"HR\" is in white and \"ACADEMY \" in red"
         ]
       },
       "acceptanceCriteria": [
-        "Admin page contains clear, labeled inputs for each editable section covered by REQ-1.",
-        "Each section editor has an explicit Save action and shows success/error toasts on completion/failure.",
-        "Saving updates invalidate/refetch the relevant React Query keys so the Admin UI immediately reflects the saved draft state.",
-        "The existing admin functionality (courses, gallery, review screenshots, contact info, submitted reviews) continues to work unchanged."
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "text": "Implement a simple, easy-to-manage Preview workflow: allow admins to preview draft content on public pages without publishing, using a URL-based preview mode that can be toggled from the Admin Panel via a clearly visible Preview button.",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-3"
-        ],
-        "quotes": [
-          "make preview button easy manageable"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Admin Panel provides a prominent Preview button (or a small set of Preview buttons per page) that opens the selected page in preview mode (e.g., with a query parameter like preview=1).",
-        "When preview mode is active and the viewer is an authenticated admin, pages render draft content instead of published content for the sections in REQ-1.",
-        "When preview mode is active but the viewer is not an authenticated admin, the app falls back to published content (no draft leakage).",
-        "Preview mode is easy to exit (e.g., a visible “Exit preview” control that removes/ignores preview mode)."
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "text": "If the backend state schema changes are required to store new draft/published site content, add a safe Motoko upgrade path that preserves existing canister data (courses, gallery images, review images, submitted reviews, contact info, profiles, inquiries) during upgrades.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-3"
-        ],
-        "quotes": [
-          "Make all the editable sections mentioned above editable and make preview button easy manageable"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Upgrading the canister does not erase or reset existing persisted data.",
-        "New site-content state initializes sensibly on upgrade (e.g., defaults derived from current hard-coded content if no prior saved content exists)."
+        "In the hero H1 on the Home page, the displayed title reads exactly “HR ACADEMY”.",
+        "The “HR” portion of the title is rendered in white and the “ACADEMY” portion is rendered in red (using the app’s existing red accent styling, e.g., `text-accent-red`).",
+        "The string “Welcome to HR Academy” is no longer shown in the hero heading in either normal or preview mode."
       ]
     }
   ],
   "constraints": [
-    "Backend must remain a single Motoko actor in backend/main.mo.",
-    "Do not edit files under frontend/src/components/ui or any frontend immutablePaths (frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx). Compose them instead.",
-    "Use English for all user-facing UI text."
+    "Do not modify any files under `frontend/src/components/ui` or other immutable paths listed in SYSTEM_CONTEXT."
   ],
   "nonGoals": [
-    "Do not add third-party authentication providers (only Internet Identity is allowed).",
-    "Do not implement real-time collaboration or websockets for preview.",
-    "Do not redesign unrelated pages or change the existing gallery/courses/reviews/contact-info features beyond wiring them into the preview/publish flow if explicitly needed."
+    "Do not change backend data models, stored homepage content, or the admin editing workflow for homepage content.",
+    "Do not redesign other parts of the header, footer, or navigation."
   ],
   "imageRequirements": {
     "required": [],

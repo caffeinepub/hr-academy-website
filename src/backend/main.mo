@@ -4,7 +4,7 @@ import Iter "mo:core/Iter";
 import Principal "mo:core/Principal";
 import Order "mo:core/Order";
 import Runtime "mo:core/Runtime";
-import Migration "migration";
+
 
 import MixinAuthorization "authorization/MixinAuthorization";
 import Storage "blob-storage/Storage";
@@ -12,7 +12,7 @@ import MixinStorage "blob-storage/Mixin";
 import AccessControl "authorization/access-control";
 
 // Apply migration
-(with migration = Migration.run)
+
 actor {
   // Page content types
   public type HomePageContent = {
