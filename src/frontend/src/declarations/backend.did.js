@@ -128,6 +128,8 @@ export const idlService = IDL.Service({
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getContactInfo' : IDL.Func([], [ContactInfo], ['query']),
   'getCourses' : IDL.Func([], [IDL.Vec(Course)], ['query']),
+  'getFeaturedGalleryImageIDs' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
+  'getFeaturedGalleryImages' : IDL.Func([], [IDL.Vec(GalleryImage)], ['query']),
   'getGalleryImages' : IDL.Func([], [IDL.Vec(GalleryImage)], ['query']),
   'getHomePageContent' : IDL.Func([IDL.Bool], [HomePageContent], ['query']),
   'getInternationalInquiries' : IDL.Func(
@@ -148,6 +150,7 @@ export const idlService = IDL.Service({
   'removeGalleryImage' : IDL.Func([IDL.Text], [], []),
   'removeReviewImage' : IDL.Func([IDL.Text], [], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  'setFeaturedGalleryImageIDs' : IDL.Func([IDL.Vec(IDL.Text)], [], []),
   'submitInternationalInquiry' : IDL.Func(
       [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text],
       [],
@@ -297,6 +300,12 @@ export const idlFactory = ({ IDL }) => {
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getContactInfo' : IDL.Func([], [ContactInfo], ['query']),
     'getCourses' : IDL.Func([], [IDL.Vec(Course)], ['query']),
+    'getFeaturedGalleryImageIDs' : IDL.Func([], [IDL.Vec(IDL.Text)], ['query']),
+    'getFeaturedGalleryImages' : IDL.Func(
+        [],
+        [IDL.Vec(GalleryImage)],
+        ['query'],
+      ),
     'getGalleryImages' : IDL.Func([], [IDL.Vec(GalleryImage)], ['query']),
     'getHomePageContent' : IDL.Func([IDL.Bool], [HomePageContent], ['query']),
     'getInternationalInquiries' : IDL.Func(
@@ -317,6 +326,7 @@ export const idlFactory = ({ IDL }) => {
     'removeGalleryImage' : IDL.Func([IDL.Text], [], []),
     'removeReviewImage' : IDL.Func([IDL.Text], [], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+    'setFeaturedGalleryImageIDs' : IDL.Func([IDL.Vec(IDL.Text)], [], []),
     'submitInternationalInquiry' : IDL.Func(
         [IDL.Text, IDL.Text, IDL.Text, IDL.Text, IDL.Text],
         [],

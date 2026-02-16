@@ -178,6 +178,8 @@ export interface backendInterface {
     getCallerUserRole(): Promise<UserRole>;
     getContactInfo(): Promise<ContactInfo>;
     getCourses(): Promise<Array<Course>>;
+    getFeaturedGalleryImageIDs(): Promise<Array<string>>;
+    getFeaturedGalleryImages(): Promise<Array<GalleryImage>>;
     getGalleryImages(): Promise<Array<GalleryImage>>;
     getHomePageContent(isPreview: boolean): Promise<HomePageContent>;
     getInternationalInquiries(): Promise<Array<InternationalInquiry>>;
@@ -190,6 +192,7 @@ export interface backendInterface {
     removeGalleryImage(id: string): Promise<void>;
     removeReviewImage(id: string): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    setFeaturedGalleryImageIDs(imageIDs: Array<string>): Promise<void>;
     submitInternationalInquiry(id: string, name: string, email: string, message: string, country: string): Promise<void>;
     submitReview(id: string, name: string | null, content: string, rating: bigint): Promise<void>;
     updateContactInfo(phone: string, instagram: string, branches: Array<string>, ownerName: string, email: string, facebook: string, whatsapp: string): Promise<void>;
@@ -436,6 +439,34 @@ export class Backend implements backendInterface {
             return from_candid_vec_n20(this._uploadFile, this._downloadFile, result);
         }
     }
+    async getFeaturedGalleryImageIDs(): Promise<Array<string>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getFeaturedGalleryImageIDs();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getFeaturedGalleryImageIDs();
+            return result;
+        }
+    }
+    async getFeaturedGalleryImages(): Promise<Array<GalleryImage>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getFeaturedGalleryImages();
+                return from_candid_vec_n25(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getFeaturedGalleryImages();
+            return from_candid_vec_n25(this._uploadFile, this._downloadFile, result);
+        }
+    }
     async getGalleryImages(): Promise<Array<GalleryImage>> {
         if (this.processError) {
             try {
@@ -601,6 +632,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.saveCallerUserProfile(arg0);
+            return result;
+        }
+    }
+    async setFeaturedGalleryImageIDs(arg0: Array<string>): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.setFeaturedGalleryImageIDs(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.setFeaturedGalleryImageIDs(arg0);
             return result;
         }
     }

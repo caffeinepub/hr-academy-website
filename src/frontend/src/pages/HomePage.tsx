@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 import BrandLogo from '@/components/BrandLogo';
 import HomeGallerySection from '@/components/HomeGallerySection';
 import { usePreviewMode } from '@/hooks/usePreviewMode';
+import { useContactScroll } from '@/hooks/useContactScroll';
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ export default function HomePage() {
   const { data: submittedReviews = [] } = useGetSubmittedReviews();
   const { data: pageContent } = useGetHomePageContent(canPreview);
   const submitReview = useSubmitReview();
+  const { scrollToContact } = useContactScroll();
 
   const [reviewForm, setReviewForm] = useState({
     name: '',
@@ -115,7 +117,7 @@ export default function HomePage() {
                 size="lg" 
                 variant="outline" 
                 className="border-accent-red text-accent-red hover:bg-accent-red hover:text-white"
-                onClick={() => navigate({ to: '/contact' })}
+                onClick={scrollToContact}
               >
                 Contact Us
               </Button>
@@ -222,11 +224,23 @@ export default function HomePage() {
             </div>
           )}
 
-          {/* Review Submission Form */}
-          <Card className="bg-gray-800 border-accent-red/20 max-w-2xl mx-auto">
+          {/* Submit Review Form */}
+          <Card className="max-w-2xl mx-auto bg-gray-800 border-accent-red/20">
             <CardContent className="pt-6">
-              <h3 className="text-xl font-semibold text-white mb-4">Leave a Review</h3>
+              <h3 className="text-2xl font-bold text-white mb-6 text-center">Share Your Experience</h3>
               <form onSubmit={handleSubmitReview} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="review-name" className="text-white">Name (Optional)</Label>
+                  <Input
+                    id="review-name"
+                    placeholder="Your name"
+                    value={reviewForm.name}
+                    onChange={(e) => setReviewForm({ ...reviewForm, name: e.target.value })}
+                    disabled={reviewForm.anonymous}
+                    className="bg-gray-900 border-accent-red/20 text-white placeholder:text-gray-500"
+                  />
+                </div>
+
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="anonymous"
@@ -235,26 +249,13 @@ export default function HomePage() {
                       setReviewForm({ ...reviewForm, anonymous: checked as boolean })
                     }
                   />
-                  <Label htmlFor="anonymous" className="text-white cursor-pointer">
+                  <Label htmlFor="anonymous" className="text-white text-sm cursor-pointer">
                     Submit anonymously
                   </Label>
                 </div>
 
-                {!reviewForm.anonymous && (
-                  <div className="space-y-2">
-                    <Label htmlFor="name" className="text-white">Name (Optional)</Label>
-                    <Input
-                      id="name"
-                      placeholder="Your name"
-                      value={reviewForm.name}
-                      onChange={(e) => setReviewForm({ ...reviewForm, name: e.target.value })}
-                      className="bg-gray-900 border-accent-red/20 text-white placeholder:text-gray-500"
-                    />
-                  </div>
-                )}
-
                 <div className="space-y-2">
-                  <Label htmlFor="rating" className="text-white">Rating</Label>
+                  <Label htmlFor="review-rating" className="text-white">Rating</Label>
                   <div className="flex items-center space-x-2">
                     {[1, 2, 3, 4, 5].map((rating) => (
                       <button
@@ -264,7 +265,7 @@ export default function HomePage() {
                         className="focus:outline-none"
                       >
                         <Star
-                          className={`h-6 w-6 ${
+                          className={`h-8 w-8 transition-colors ${
                             rating <= reviewForm.rating
                               ? 'fill-accent-red text-accent-red'
                               : 'text-gray-600'
@@ -276,20 +277,19 @@ export default function HomePage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="content" className="text-white">Your Review</Label>
+                  <Label htmlFor="review-content" className="text-white">Your Review</Label>
                   <Textarea
-                    id="content"
-                    placeholder="Share your experience..."
+                    id="review-content"
+                    placeholder="Share your experience with HR Academy..."
                     rows={4}
                     value={reviewForm.content}
                     onChange={(e) => setReviewForm({ ...reviewForm, content: e.target.value })}
                     className="bg-gray-900 border-accent-red/20 text-white placeholder:text-gray-500"
-                    required
                   />
                 </div>
 
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className="w-full bg-accent-red hover:bg-accent-red/90 text-white"
                   disabled={submitReview.isPending}
                 >
@@ -298,25 +298,6 @@ export default function HomePage() {
               </form>
             </CardContent>
           </Card>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-b from-black to-gray-900">
-        <div className="container text-center space-y-6">
-          <h2 className="text-3xl md:text-4xl font-bold text-white">
-            Ready to Start Your <span className="text-accent-red">Journey</span>?
-          </h2>
-          <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-            Join thousands of successful students who have achieved their academic goals with HR Academy
-          </p>
-          <Button 
-            size="lg" 
-            className="bg-accent-red hover:bg-accent-red/90 text-white"
-            onClick={() => navigate({ to: '/contact' })}
-          >
-            Contact Us Today
-          </Button>
         </div>
       </section>
     </div>

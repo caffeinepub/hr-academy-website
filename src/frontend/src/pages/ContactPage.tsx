@@ -78,7 +78,7 @@ export default function ContactPage() {
         {/* Header */}
         <div className="text-center mb-12 space-y-4">
           <h1 className="text-4xl md:text-5xl font-bold text-white">
-            Get in <span className="text-accent-red">Touch</span>
+            Contact <span className="text-accent-red">Us</span>
           </h1>
           <p className="text-lg text-gray-400 max-w-2xl mx-auto">
             {pageContent?.contactText || 'Have questions? We\'d love to hear from you. Send us a message and we\'ll respond as soon as possible.'}

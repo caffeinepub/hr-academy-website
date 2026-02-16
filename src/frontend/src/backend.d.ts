@@ -85,6 +85,8 @@ export interface backendInterface {
     getCallerUserRole(): Promise<UserRole>;
     getContactInfo(): Promise<ContactInfo>;
     getCourses(): Promise<Array<Course>>;
+    getFeaturedGalleryImageIDs(): Promise<Array<string>>;
+    getFeaturedGalleryImages(): Promise<Array<GalleryImage>>;
     getGalleryImages(): Promise<Array<GalleryImage>>;
     getHomePageContent(isPreview: boolean): Promise<HomePageContent>;
     getInternationalInquiries(): Promise<Array<InternationalInquiry>>;
@@ -97,6 +99,7 @@ export interface backendInterface {
     removeGalleryImage(id: string): Promise<void>;
     removeReviewImage(id: string): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    setFeaturedGalleryImageIDs(imageIDs: Array<string>): Promise<void>;
     submitInternationalInquiry(id: string, name: string, email: string, message: string, country: string): Promise<void>;
     submitReview(id: string, name: string | null, content: string, rating: bigint): Promise<void>;
     updateContactInfo(phone: string, instagram: string, branches: Array<string>, ownerName: string, email: string, facebook: string, whatsapp: string): Promise<void>;

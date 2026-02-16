@@ -29,6 +29,49 @@ export function useGetGalleryImages() {
   });
 }
 
+export function useGetFeaturedGalleryImages() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<GalleryImage[]>({
+    queryKey: ['featuredGalleryImages'],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getFeaturedGalleryImages();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useGetFeaturedGalleryImageIDs() {
+  const { actor, isFetching } = useActor();
+  const { identity } = useInternetIdentity();
+
+  return useQuery<string[]>({
+    queryKey: ['featuredGalleryImageIDs'],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getFeaturedGalleryImageIDs();
+    },
+    enabled: !!actor && !isFetching && !!identity,
+  });
+}
+
+export function useSetFeaturedGalleryImageIDs() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (imageIDs: string[]) => {
+      if (!actor) throw new Error('Actor not initialized');
+      await actor.setFeaturedGalleryImageIDs(imageIDs);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['featuredGalleryImageIDs'] });
+      queryClient.invalidateQueries({ queryKey: ['featuredGalleryImages'] });
+    },
+  });
+}
+
 export function useGetContactInfo() {
   const { actor, isFetching } = useActor();
 
@@ -238,6 +281,7 @@ export function useAddOrUpdateGalleryImage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['galleryImages'] });
+      queryClient.invalidateQueries({ queryKey: ['featuredGalleryImages'] });
     },
   });
 }
@@ -253,6 +297,8 @@ export function useRemoveGalleryImage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['galleryImages'] });
+      queryClient.invalidateQueries({ queryKey: ['featuredGalleryImages'] });
+      queryClient.invalidateQueries({ queryKey: ['featuredGalleryImageIDs'] });
     },
   });
 }

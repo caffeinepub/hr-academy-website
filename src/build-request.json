@@ -1,33 +1,36 @@
 {
   "kind": "build_request",
-  "title": "Update hero heading text to styled “HR ACADEMY”",
+  "title": "Remove the homepage CTA section ('Ready to Start Your Journey?')",
+  "projectName": "HR Academy",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-1",
-      "text": "On the Home page hero section, remove the existing “Welcome to HR Academy” heading text and instead display “HR ACADEMY” as a two-part styled heading where “HR” is white and “ACADEMY” is red.",
+      "id": "REQ-10",
+      "text": "Remove the Home page call-to-action section that contains the heading \"Ready to Start Your Journey?\" (including its supporting paragraph and the \"Contact Us Today\" button) so that this section no longer appears anywhere on the site UI.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-3"
         ],
         "quotes": [
-          "Remove \"Welcome to HR Academy \" and instead add \"HR ACADEMY \" where \"HR\" is in white and \"ACADEMY \" in red"
+          "Remove the \"Ready to start your journey\" part"
         ]
       },
       "acceptanceCriteria": [
-        "In the hero H1 on the Home page, the displayed title reads exactly “HR ACADEMY”.",
-        "The “HR” portion of the title is rendered in white and the “ACADEMY” portion is rendered in red (using the app’s existing red accent styling, e.g., `text-accent-red`).",
-        "The string “Welcome to HR Academy” is no longer shown in the hero heading in either normal or preview mode."
+        "On the Home page, the CTA section with the heading \"Ready to Start Your Journey?\" is no longer rendered.",
+        "The paragraph \"Join thousands of successful students who have achieved their academic goals with HR Academy\" is no longer visible on the Home page.",
+        "The \"Contact Us Today\" button from that CTA section is no longer visible on the Home page.",
+        "The Home page layout remains valid and the footer still appears immediately after the preceding content (currently the Reviews section) with no blank/empty CTA area."
       ]
     }
   ],
   "constraints": [
-    "Do not modify any files under `frontend/src/components/ui` or other immutable paths listed in SYSTEM_CONTEXT."
+    "Do not modify any files under frontend/src/components/ui (Shadcn components).",
+    "Keep the existing Contact Us scroll-to-footer behavior unchanged wherever it remains in the UI."
   ],
   "nonGoals": [
-    "Do not change backend data models, stored homepage content, or the admin editing workflow for homepage content.",
-    "Do not redesign other parts of the header, footer, or navigation."
+    "Do not change any backend data models or homepage content storage for this request.",
+    "Do not change the hero section, gallery section, reviews section, or footer content other than removing the specified CTA section."
   ],
   "imageRequirements": {
     "required": [],

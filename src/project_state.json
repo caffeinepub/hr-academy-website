@@ -1,16 +1,66 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 3,
-  "summary": "New project",
-  "architectural_notes": [],
+  "projectStateVersion": 9,
+  "summary": "HR ACADEMY site/project with deployable versions and styling/content tweaks, including a configurable homepage image preview linking to a full Gallery in the sidebar.",
+  "architectural_notes": [
+    "\"Contact Us\" navigation should scroll/jump to a defined bottom-of-page contact section (e.g., anchor/#contact) rather than opening a separate query/flow."
+  ],
   "known_issues": [],
   "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-on-the-home-page-hero-section-remove-the-existing-welcome-to-hr-academy-heading-text-and-instead-display-hr-academy-as-a-two-part-styled-heading-where-hr-is-white-and-academy-is-red",
-      "title": "On the Home page hero section, remove the existing “Welcome to HR Academy” heading text and instead display “HR ACADEMY” as a two-part styled heading where “HR” is white and “ACADEMY” is red.",
+      "id": "feature-update-the-admin-dashboard-gallery-management-ui-to-allow-an-admin-to-choose-which-gallery-images-are-featured-on-the-home-page",
+      "title": "Update the Admin dashboard Gallery management UI to allow an admin to choose which Gallery images are featured on the Home page.",
       "reqIds": [
-        "REQ-1"
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-change-the-home-page-gallery-section-to-display-only-the-selected-featured-gallery-images-up-to-4-and-provide-a-clear-navigation-action-that-takes-the-user-to-the-full-gallery-page-gallery-to-view-all-images",
+      "title": "Change the Home page gallery section to display only the selected featured gallery images (up to 4), and provide a clear navigation action that takes the user to the full Gallery page (/gallery) to view all images.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-site-navigation-to-remove-any-existing-contact-us-contact-page-navigation-option-and-replace-it-with-a-single-contact-us-option-that-when-clicked-navigates-to-the-bottom-contact-section-of-the-website-footer-area-via-in-page-scrolling",
+      "title": "Update the site navigation to remove any existing “Contact us” / contact page navigation option and replace it with a single “Contact Us” option that, when clicked, navigates to the bottom contact section of the website (footer area) via in-page scrolling.",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-stable-scroll-target-at-the-bottom-of-the-site-by-assigning-a-dedicated-anchor-id-to-the-footer-contact-section-and-implement-smooth-scrolling-to-this-anchor-when-contact-us-is-activated-including-when-activation-happens-after-route-navigation",
+      "title": "Add a stable scroll target at the bottom of the site by assigning a dedicated anchor/id to the footer contact section, and implement smooth scrolling to this anchor when “Contact Us” is activated (including when activation happens after route navigation).",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-the-get-in-touch-wording-from-user-facing-ui-where-it-appears-as-an-option-heading-and-ensure-the-primary-contact-wording-across-the-app-uses-contact-us",
+      "title": "Remove the “Get in Touch” wording from user-facing UI where it appears as an option/heading, and ensure the primary contact wording across the app uses “Contact Us”.",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-any-existing-contact-us-call-to-action-buttons-on-the-home-page-that-currently-navigate-to-contact-so-that-they-instead-scroll-navigate-to-the-bottom-contact-section-same-behavior-as-the-new-navigation-option",
+      "title": "Update any existing “Contact Us” call-to-action buttons on the Home page that currently navigate to /contact so that they instead scroll/navigate to the bottom contact section (same behavior as the new navigation option).",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-the-home-page-call-to-action-section-that-contains-the-heading-ready-to-start-your-journey-including-its-supporting-paragraph-and-the-contact-us-today-button-so-that-this-section-no-longer-appears-anywhere-on-the-site-ui",
+      "title": "Remove the Home page call-to-action section that contains the heading \"Ready to Start Your Journey?\" (including its supporting paragraph and the \"Contact Us Today\" button) so that this section no longer appears anywhere on the site UI.",
+      "reqIds": [
+        "REQ-10"
       ],
       "version": 1
     }
@@ -18,12 +68,54 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Update landing/header text: remove \"Welcome to HR Academy\" and replace with \"HR ACADEMY\" styled with \"HR\" in white and \"ACADEMY\" in red",
+      "summary": "Update homepage tagline text from \"Your path to success starts here\" to \"Trusted by 6000+ parents worldwide\".",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Update the Home page hero subtitle copy by replacing the existing text \"Your path to success starts here\" with \"Trusted by 6000+ parents worldwide\" across the app’s homepage content system (including default homepage content and any existing stored homepage content where it exactly matches the old text).",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Add an option to show only 3–4 selected images on the main page, with navigation to a Gallery sidebar menu to view all images.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Add backend support to mark a subset of Gallery images as “featured” for the Home page, so the Home page can display only 3–4 selected images while the Gallery page continues to show all images.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Add any required conditional data migration so existing deployments upgrade safely to the new featured-gallery state shape without losing existing gallery images.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Update site navigation by removing the existing \"Contact us\" option and the \"Get in Touch\" query option, and add a single \"Contact Us\" option that navigates directly to the bottom contact section of the website.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Remove the \"Ready to start your journey\" text/section from the site UI (wherever it currently appears).",
       "reqIds": [],
       "status": "pending"
     }
   ],
-  "projectName": "HR Academy",
+  "projectName": "HR ACADEMY",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

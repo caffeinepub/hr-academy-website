@@ -4,6 +4,7 @@ import Iter "mo:core/Iter";
 import Principal "mo:core/Principal";
 import Order "mo:core/Order";
 import Runtime "mo:core/Runtime";
+import Text "mo:core/Text";
 
 
 import MixinAuthorization "authorization/MixinAuthorization";
@@ -75,6 +76,9 @@ actor {
   };
 
   let galleryImages = Map.empty<Text, GalleryImage>();
+
+  // Featured Gallery State
+  var featuredGalleryImageIDs : [Text] = [];
 
   // Review Image for review screenshots only
   type ReviewImage = {
@@ -148,7 +152,7 @@ actor {
   var homePageContent : PreviewState<HomePageContent> = {
     draft = {
       heroTitle = "Welcome to HR Academy";
-      heroSubtitle = "Your path to success starts here";
+      heroSubtitle = "Trusted by 6000+ parents worldwide";
       missionStatement = "Empowering students with quality education";
       testimonialsHeading = "What Our Students Say";
       aboutText = "Learn more about our mission and values.";
@@ -156,7 +160,7 @@ actor {
     };
     published = {
       heroTitle = "Welcome to HR Academy";
-      heroSubtitle = "Your path to success starts here";
+      heroSubtitle = "Trusted by 6000+ parents worldwide";
       missionStatement = "Empowering students with quality education";
       testimonialsHeading = "What Our Students Say";
       aboutText = "Learn more about our mission and values.";
@@ -227,6 +231,32 @@ actor {
       Runtime.trap("Unauthorized: Only admin can remove gallery images");
     };
     galleryImages.remove(id);
+  };
+
+  public shared ({ caller }) func setFeaturedGalleryImageIDs(imageIDs : [Text]) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admin can set featured images");
+    };
+
+    if (imageIDs.size() > 4) {
+      Runtime.trap("Cannot feature more than 4 images");
+    };
+
+    let valid = imageIDs.foldLeft(
+      true,
+      func(acc, id) {
+        switch (galleryImages.get(id)) {
+          case (null) { false };
+          case (_) { acc };
+        };
+      },
+    );
+
+    if (not valid) {
+      Runtime.trap("One or more image IDs not present in gallery");
+    };
+
+    featuredGalleryImageIDs := imageIDs;
   };
 
   public shared ({ caller }) func updateContactInfo(phone : Text, instagram : Text, branches : [Text], ownerName : Text, email : Text, facebook : Text, whatsapp : Text) : async () {
@@ -357,5 +387,33 @@ actor {
 
   public query func getContactInfo() : async ContactInfo {
     contactInfo;
+  };
+
+  // Featured Gallery Queries
+  public query func getFeaturedGalleryImageIDs() : async [Text] {
+    featuredGalleryImageIDs;
+  };
+
+  public query func getFeaturedGalleryImages() : async [GalleryImage] {
+    let tempImages = featuredGalleryImageIDs.map(
+      func(id) {
+        galleryImages.get(id);
+      }
+    );
+
+    let filteredImages = tempImages.filter(
+      func(img) { switch (img) { case (null) { false }; case (_) { true } } }
+    );
+
+    filteredImages.map(
+      func(optImg) {
+        switch (optImg) {
+          case (?galleryImage) { galleryImage };
+          case (null) {
+            Runtime.trap("Unexpected null value in filtered array. Should never happen. ");
+          };
+        };
+      }
+    );
   };
 };

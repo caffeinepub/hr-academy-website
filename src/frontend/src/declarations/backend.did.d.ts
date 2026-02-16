@@ -108,6 +108,8 @@ export interface _SERVICE {
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getContactInfo' : ActorMethod<[], ContactInfo>,
   'getCourses' : ActorMethod<[], Array<Course>>,
+  'getFeaturedGalleryImageIDs' : ActorMethod<[], Array<string>>,
+  'getFeaturedGalleryImages' : ActorMethod<[], Array<GalleryImage>>,
   'getGalleryImages' : ActorMethod<[], Array<GalleryImage>>,
   'getHomePageContent' : ActorMethod<[boolean], HomePageContent>,
   'getInternationalInquiries' : ActorMethod<[], Array<InternationalInquiry>>,
@@ -120,6 +122,7 @@ export interface _SERVICE {
   'removeGalleryImage' : ActorMethod<[string], undefined>,
   'removeReviewImage' : ActorMethod<[string], undefined>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'setFeaturedGalleryImageIDs' : ActorMethod<[Array<string>], undefined>,
   'submitInternationalInquiry' : ActorMethod<
     [string, string, string, string, string],
     undefined

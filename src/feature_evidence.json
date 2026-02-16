@@ -2,8 +2,8 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-on-the-home-page-hero-section-remove-the-existing-welcome-to-hr-academy-heading-text-and-instead-display-hr-academy-as-a-two-part-styled-heading-where-hr-is-white-and-academy-is-red",
-      "featureTitle": "On the Home page hero section, remove the existing “Welcome to HR Academy” heading text and instead display “HR ACADEMY” as a two-part styled heading where “HR” is white and “ACADEMY” is red.",
+      "featureId": "feature-remove-the-home-page-call-to-action-section-that-contains-the-heading-ready-to-start-your-journey-including-its-supporting-paragraph-and-the-contact-us-today-button-so-that-this-section-no-longer-appears-anywhere-on-the-site-ui",
+      "featureTitle": "Remove the Home page call-to-action section that contains the heading \"Ready to Start Your Journey?\" (including its supporting paragraph and the \"Contact Us Today\" button) so that this section no longer appears anywhere on the site UI.",
       "files": [
         "frontend/src/pages/HomePage.tsx"
       ],
@@ -17,7 +17,7 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-1"
+        "REQ-10"
       ],
       "confidence": "high"
     }

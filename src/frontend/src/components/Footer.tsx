@@ -17,7 +17,7 @@ export default function Footer() {
   const appIdentifier = encodeURIComponent(window.location.hostname || 'hr-academy');
 
   return (
-    <footer className="border-t border-accent-red/20 bg-black text-white">
+    <footer id="contact-section" className="border-t border-accent-red/20 bg-black text-white">
       <div className="container py-12">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           {/* About Section */}

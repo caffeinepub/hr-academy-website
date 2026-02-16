@@ -1,10 +1,10 @@
 # Specification
 
 ## Summary
-**Goal:** Update the Home page hero heading to display a styled “HR ACADEMY” title instead of “Welcome to HR Academy”.
+**Goal:** Remove the Home page call-to-action section titled “Ready to Start Your Journey?” so it no longer appears anywhere in the site UI.
 
 **Planned changes:**
-- Replace the existing Home page hero H1 text “Welcome to HR Academy” with a two-part heading: “HR” and “ACADEMY”.
-- Style “HR” in white and “ACADEMY” in red using the app’s existing red accent styling (e.g., `text-accent-red`).
+- Remove the Home page CTA section containing the heading “Ready to Start Your Journey?”, its supporting paragraph, and the “Contact Us Today” button.
+- Ensure the Home page layout remains contiguous so the footer follows immediately after the preceding section (currently Reviews) without any blank/empty space.
 
-**User-visible outcome:** On the Home page, the hero heading reads “HR ACADEMY” with “HR” in white and “ACADEMY” in red, and “Welcome to HR Academy” is no longer shown.
+**User-visible outcome:** The Home page no longer shows the “Ready to Start Your Journey?” CTA area (including its text and button), and the page flows directly from the Reviews section to the footer.

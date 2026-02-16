@@ -1,21 +1,22 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Style Home hero heading as “HR ACADEMY” with two-color treatment",
+  "title": "HR Academy - Remove Home page CTA section",
   "requirements": [
     {
-      "id": "REQ-1",
-      "summary": "Replace the Home page hero H1 with a fixed two-part “HR ACADEMY” title where “HR” is white and “ACADEMY” uses the existing red accent styling.",
+      "id": "REQ-10",
+      "summary": "Remove the Home page CTA section containing the \"Ready to Start Your Journey?\" heading, its paragraph, and the \"Contact Us Today\" button so it no longer appears in the UI.",
       "acceptanceCriteria": [
-        "In the hero H1 on the Home page, the displayed title reads exactly “HR ACADEMY”.",
-        "The “HR” portion of the title is rendered in white and the “ACADEMY” portion is rendered in red (using the app’s existing red accent styling, e.g., `text-accent-red`).",
-        "The string “Welcome to HR Academy” is no longer shown in the hero heading in either normal or preview mode."
+        "On the Home page, the CTA section with the heading \"Ready to Start Your Journey?\" is no longer rendered.",
+        "The paragraph \"Join thousands of successful students who have achieved their academic goals with HR Academy\" is no longer visible on the Home page.",
+        "The \"Contact Us Today\" button from that CTA section is no longer visible on the Home page.",
+        "The Home page layout remains valid and the footer still appears immediately after the preceding content (currently the Reviews section) with no blank/empty CTA area."
       ],
       "file_operations": [
         {
           "path": "frontend/src/pages/HomePage.tsx",
           "operation": "modify",
-          "description": "Update the hero section H1 to render a two-part heading (e.g., separate spans) that always displays “HR ACADEMY”, with “HR” styled as white and “ACADEMY” styled with the existing red accent class (e.g., `text-accent-red`). Ensure the H1 no longer uses `pageContent?.heroTitle` so that any previously configured title such as “Welcome to HR Academy” will not appear in either normal or preview mode."
+          "description": "Delete the CTA <section> block labeled \"CTA Section\" that renders the \"Ready to Start Your Journey?\" heading, supporting paragraph, and \"Contact Us Today\" button. Ensure the Home page flow goes directly from the Reviews section to the footer (via Layout) with no empty spacing, and keep existing Contact Us scroll-to-footer behavior unchanged wherever it remains. Also clean up any imports/variables that become unused after removing this section (without modifying any files under frontend/src/components/ui)."
         }
       ]
     }
