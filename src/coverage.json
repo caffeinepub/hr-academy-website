@@ -1,34 +1,80 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T15:55:55.553Z",
+  "generatedAt": "2026-02-17T16:33:31.797Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 1,
-    "implemented": 1,
+    "total": 4,
+    "implemented": 3,
     "items": [
       {
-        "id": "REQ-10",
-        "summary": "Remove the Home page call-to-action section that contains the heading \"Ready to Start Your Journey?\" (including its supporting paragraph and the \"Contact Us Today\" button) so that this section no longer appears anywhere on the site UI.",
+        "id": "REQ-1",
+        "summary": "Add a backend build-info query endpoint that returns a small, human-readable build identifier (e.g., version string) and build timestamp so the frontend can verify which backend canister code is currently running.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Add a frontend build-info value (build version + build timestamp) embedded at build time, and display it in the UI so users/admins can confirm whether the preview pane is showing the latest frontend bundle.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/HomePage.tsx"
+          "frontend/src/constants/buildInfo.ts",
+          "frontend/src/components/Footer.tsx",
+          "frontend/src/pages/AdminPage.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/pages/HomePage.tsx"
+          "frontend/src/constants/buildInfo.ts",
+          "frontend/src/components/Footer.tsx",
+          "frontend/src/pages/AdminPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-3",
+        "summary": "In the Admin dashboard, add a 'Diagnostics' section that fetches and displays the backend build info and highlights whether the backend build info matches the frontend build info (to help diagnose stale previews/caching).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/pages/AdminPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/pages/AdminPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-4",
+        "summary": "Add a user-facing 'Refresh preview' action that helps the user force an update when the right-side preview is stale (e.g., a button that reloads the page and optionally clears browser caches where possible).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/utils/refreshPreview.ts",
+          "frontend/src/pages/AdminPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/utils/refreshPreview.ts",
+          "frontend/src/pages/AdminPage.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/pages/HomePage.tsx",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/components/Footer.tsx",
+    "frontend/src/constants/buildInfo.ts",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/pages/AdminPage.tsx",
+    "frontend/src/utils/refreshPreview.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

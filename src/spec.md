@@ -1,10 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Remove the Home page call-to-action section titled “Ready to Start Your Journey?” so it no longer appears anywhere in the site UI.
+**Goal:** Make it easy to confirm which frontend bundle and backend canister version are currently running, and reduce confusion when the preview or deployed site appears stale.
 
 **Planned changes:**
-- Remove the Home page CTA section containing the heading “Ready to Start Your Journey?”, its supporting paragraph, and the “Contact Us Today” button.
-- Ensure the Home page layout remains contiguous so the footer follows immediately after the preceding section (currently Reviews) without any blank/empty space.
+- Add a backend public query endpoint that returns a human-readable buildVersion and buildTimestamp.
+- Embed frontend buildVersion and buildTimestamp at build time as a single source of truth, and display it in a subtle always-visible location (e.g., footer).
+- Add an Admin dashboard “Diagnostics” section that shows both frontend and backend build info and indicates whether they match (with a clear warning when they do not).
+- Add a user-facing “Refresh preview” action (at least in Admin Diagnostics) that attempts best-effort cache clearing (when available) and then performs a full page reload.
 
-**User-visible outcome:** The Home page no longer shows the “Ready to Start Your Journey?” CTA area (including its text and button), and the page flows directly from the Reviews section to the footer.
+**User-visible outcome:** Admins can view frontend and backend build/version timestamps side-by-side, see whether they match, and use a “Refresh preview” action to help resolve stale preview/deployment mismatches.

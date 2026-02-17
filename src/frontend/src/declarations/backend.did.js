@@ -37,6 +37,10 @@ export const SubmittedReview = IDL.Record({
   'name' : IDL.Opt(IDL.Text),
   'rating' : IDL.Nat,
 });
+export const BuildInfo = IDL.Record({
+  'timestamp' : IDL.Int,
+  'build' : IDL.Text,
+});
 export const UserProfile = IDL.Record({ 'name' : IDL.Text, 'role' : IDL.Text });
 export const ContactInfo = IDL.Record({
   'ownerName' : IDL.Text,
@@ -124,6 +128,7 @@ export const idlService = IDL.Service({
       [IDL.Vec(SubmittedReview)],
       ['query'],
     ),
+  'getBuildInfo' : IDL.Func([], [BuildInfo], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getContactInfo' : IDL.Func([], [ContactInfo], ['query']),
@@ -209,6 +214,7 @@ export const idlFactory = ({ IDL }) => {
     'name' : IDL.Opt(IDL.Text),
     'rating' : IDL.Nat,
   });
+  const BuildInfo = IDL.Record({ 'timestamp' : IDL.Int, 'build' : IDL.Text });
   const UserProfile = IDL.Record({ 'name' : IDL.Text, 'role' : IDL.Text });
   const ContactInfo = IDL.Record({
     'ownerName' : IDL.Text,
@@ -296,6 +302,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(SubmittedReview)],
         ['query'],
       ),
+    'getBuildInfo' : IDL.Func([], [BuildInfo], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getContactInfo' : IDL.Func([], [ContactInfo], ['query']),

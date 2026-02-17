@@ -14,6 +14,10 @@ export class ExternalBlob {
     static fromBytes(blob: Uint8Array<ArrayBuffer>): ExternalBlob;
     withUploadProgress(onProgress: (percentage: number) => void): ExternalBlob;
 }
+export interface BuildInfo {
+    timestamp: bigint;
+    build: string;
+}
 export interface HomePageContent {
     missionStatement: string;
     contactText: string;
@@ -81,6 +85,7 @@ export interface backendInterface {
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     deleteReview(id: string): Promise<void>;
     getAllSubmittedReviews(): Promise<Array<SubmittedReview>>;
+    getBuildInfo(): Promise<BuildInfo>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getContactInfo(): Promise<ContactInfo>;

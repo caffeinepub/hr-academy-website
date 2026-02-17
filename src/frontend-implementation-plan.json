@@ -1,22 +1,74 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "HR Academy - Remove Home page CTA section",
+  "title": "Frontend build/backend build diagnostics and refresh controls",
   "requirements": [
     {
-      "id": "REQ-10",
-      "summary": "Remove the Home page CTA section containing the \"Ready to Start Your Journey?\" heading, its paragraph, and the \"Contact Us Today\" button so it no longer appears in the UI.",
+      "id": "REQ-2",
+      "summary": "Embed frontend buildVersion/buildTimestamp at build time and display it in always-visible UI and Admin diagnostics",
       "acceptanceCriteria": [
-        "On the Home page, the CTA section with the heading \"Ready to Start Your Journey?\" is no longer rendered.",
-        "The paragraph \"Join thousands of successful students who have achieved their academic goals with HR Academy\" is no longer visible on the Home page.",
-        "The \"Contact Us Today\" button from that CTA section is no longer visible on the Home page.",
-        "The Home page layout remains valid and the footer still appears immediately after the preceding content (currently the Reviews section) with no blank/empty CTA area."
+        "Frontend has a single source of truth for the frontend buildVersion and buildTimestamp (e.g., constants) that can be shown in the UI.",
+        "Footer (or another always-visible location) displays the frontend buildVersion/buildTimestamp in a subtle, non-distracting way.",
+        "Admin page displays the frontend buildVersion/buildTimestamp in a clearly labeled 'Diagnostics' or 'Build Info' area."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/HomePage.tsx",
+          "path": "frontend/src/constants/buildInfo.ts",
+          "operation": "create",
+          "description": "Create a single source of truth for frontend build diagnostics (frontend buildVersion + buildTimestamp) sourced from build-time environment variables with safe fallbacks for local/dev builds."
+        },
+        {
+          "path": "frontend/src/components/Footer.tsx",
           "operation": "modify",
-          "description": "Delete the CTA <section> block labeled \"CTA Section\" that renders the \"Ready to Start Your Journey?\" heading, supporting paragraph, and \"Contact Us Today\" button. Ensure the Home page flow goes directly from the Reviews section to the footer (via Layout) with no empty spacing, and keep existing Contact Us scroll-to-footer behavior unchanged wherever it remains. Also clean up any imports/variables that become unused after removing this section (without modifying any files under frontend/src/components/ui)."
+          "description": "Display the frontend buildVersion/buildTimestamp from frontend/src/constants/buildInfo.ts in a subtle, non-distracting footer area (always visible). Use existing shadcn-ui typography/layout conventions where applicable; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/AdminPage.tsx",
+          "operation": "modify",
+          "description": "Add a clearly labeled 'Diagnostics' / 'Build Info' area in the Admin dashboard that includes the frontend buildVersion/buildTimestamp from frontend/src/constants/buildInfo.ts. Use existing shadcn-ui components already used on the page (e.g., Card, Alert, Button, Tabs) to match styling; verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Admin Diagnostics section fetches backend build info and shows match/mismatch status vs frontend build info",
+      "acceptanceCriteria": [
+        "Admin dashboard shows backend buildVersion/buildTimestamp fetched from the new backend query endpoint.",
+        "Admin dashboard shows frontend buildVersion/buildTimestamp next to the backend values.",
+        "If frontend and backend buildVersion differ, the UI shows a clear warning message explaining that the preview may be stale and recommending a refresh.",
+        "If they match, the UI shows a clear 'up-to-date' status."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Add a React Query hook (e.g., useGetBuildInfo) that calls the existing backend build-info function available on the actor (getBuildInfo) and returns the backend build identifier and timestamp for diagnostics display."
+        },
+        {
+          "path": "frontend/src/pages/AdminPage.tsx",
+          "operation": "modify",
+          "description": "In the Admin dashboard 'Diagnostics' section, fetch backend build info via the new React Query hook and render backend vs frontend values side-by-side. Add clear status messaging: show an 'up-to-date' state when versions match and a warning state when they differ, with English explanatory text recommending refresh. Use existing shadcn-ui components (e.g., Alert/Card) for the status UI; verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Provide an admin-accessible 'Refresh preview' action that best-effort clears caches and reloads the page",
+      "acceptanceCriteria": [
+        "The app provides a visible 'Refresh' action accessible to admins (at minimum on the Admin page Diagnostics section).",
+        "Clicking the action triggers a full page reload.",
+        "If available in the browser, the action attempts to clear relevant caches (best-effort) before reloading, without breaking normal navigation if cache APIs are unavailable."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/utils/refreshPreview.ts",
+          "operation": "create",
+          "description": "Create a best-effort helper that attempts to clear relevant browser caches when available (e.g., Cache Storage, optional service worker unregister) and then triggers a full page reload, with safe fallbacks when APIs are unavailable."
+        },
+        {
+          "path": "frontend/src/pages/AdminPage.tsx",
+          "operation": "modify",
+          "description": "Add a visible 'Refresh preview' action/button to the Admin 'Diagnostics' section that calls the refresh helper and triggers a full page reload. Use the existing shadcn-ui Button component for consistent styling; verify the component's usage instructions before implementing."
         }
       ]
     }

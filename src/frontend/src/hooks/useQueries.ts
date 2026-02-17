@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
 import { useInternetIdentity } from './useInternetIdentity';
-import type { Course, GalleryImage, ContactInfo, UserProfile, CourseCategory, ExternalBlob, ReviewImage, SubmittedReview, HomePageContent } from '@/backend';
+import type { Course, GalleryImage, ContactInfo, UserProfile, CourseCategory, ExternalBlob, ReviewImage, SubmittedReview, HomePageContent, BuildInfo } from '@/backend';
 
 export function useGetCourses() {
   const { actor, isFetching } = useActor();
@@ -359,5 +359,20 @@ export function usePublishHomePageContent() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['homePageContent'] });
     },
+  });
+}
+
+// Build Info query
+export function useGetBuildInfo() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<BuildInfo>({
+    queryKey: ['buildInfo'],
+    queryFn: async () => {
+      if (!actor) throw new Error('Actor not initialized');
+      return actor.getBuildInfo();
+    },
+    enabled: !!actor && !isFetching,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }

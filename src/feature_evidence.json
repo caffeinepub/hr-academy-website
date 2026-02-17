@@ -2,10 +2,12 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-remove-the-home-page-call-to-action-section-that-contains-the-heading-ready-to-start-your-journey-including-its-supporting-paragraph-and-the-contact-us-today-button-so-that-this-section-no-longer-appears-anywhere-on-the-site-ui",
-      "featureTitle": "Remove the Home page call-to-action section that contains the heading \"Ready to Start Your Journey?\" (including its supporting paragraph and the \"Contact Us Today\" button) so that this section no longer appears anywhere on the site UI.",
+      "featureId": "feature-add-a-frontend-build-info-value-build-version-build-timestamp-embedded-at-build-time-and-display-it-in-the-ui-so-users-admins-can-confirm-whether-the-preview-pane-is-showing-the-latest-frontend-bundle",
+      "featureTitle": "Add a frontend build-info value (build version + build timestamp) embedded at build time, and display it in the UI so users/admins can confirm whether the preview pane is showing the latest frontend bundle.",
       "files": [
-        "frontend/src/pages/HomePage.tsx"
+        "frontend/src/components/Footer.tsx",
+        "frontend/src/constants/buildInfo.ts",
+        "frontend/src/pages/AdminPage.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -17,7 +19,49 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-10"
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-in-the-admin-dashboard-add-a-diagnostics-section-that-fetches-and-displays-the-backend-build-info-and-highlights-whether-the-backend-build-info-matches-the-frontend-build-info-to-help-diagnose-stale-previews-caching",
+      "featureTitle": "In the Admin dashboard, add a 'Diagnostics' section that fetches and displays the backend build info and highlights whether the backend build info matches the frontend build info (to help diagnose stale previews/caching).",
+      "files": [
+        "frontend/src/hooks/useQueries.ts",
+        "frontend/src/pages/AdminPage.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "blob-storage@4.0.0",
+        "authorization@4.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-user-facing-refresh-preview-action-that-helps-the-user-force-an-update-when-the-right-side-preview-is-stale-e-g-a-button-that-reloads-the-page-and-optionally-clears-browser-caches-where-possible",
+      "featureTitle": "Add a user-facing 'Refresh preview' action that helps the user force an update when the right-side preview is stale (e.g., a button that reloads the page and optionally clears browser caches where possible).",
+      "files": [
+        "frontend/src/pages/AdminPage.tsx",
+        "frontend/src/utils/refreshPreview.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "blob-storage@4.0.0",
+        "authorization@4.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
       ],
       "confidence": "high"
     }

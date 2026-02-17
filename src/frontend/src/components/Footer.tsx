@@ -3,6 +3,7 @@ import { Phone, MapPin, Heart, MessageCircle, Mail } from 'lucide-react';
 import { useGetContactInfo, useGetHomePageContent } from '@/hooks/useQueries';
 import BrandLogo from './BrandLogo';
 import { usePreviewMode } from '@/hooks/usePreviewMode';
+import { FRONTEND_BUILD_VERSION, FRONTEND_BUILD_TIMESTAMP, formatBuildTimestamp } from '@/constants/buildInfo';
 
 export default function Footer() {
   const { data: contactInfo } = useGetContactInfo();
@@ -120,8 +121,8 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 pt-8 border-t border-accent-red/20 text-center text-sm text-gray-400">
-          <p className="flex items-center justify-center gap-1">
+        <div className="mt-8 pt-8 border-t border-accent-red/20 space-y-2">
+          <p className="flex items-center justify-center gap-1 text-sm text-gray-400">
             © {new Date().getFullYear()}. Built with <Heart className="h-4 w-4 text-accent-red fill-accent-red" /> using{' '}
             <a 
               href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${appIdentifier}`}
@@ -131,6 +132,9 @@ export default function Footer() {
             >
               caffeine.ai
             </a>
+          </p>
+          <p className="text-center text-xs text-gray-600" title={formatBuildTimestamp(FRONTEND_BUILD_TIMESTAMP)}>
+            v{FRONTEND_BUILD_VERSION}
           </p>
         </div>
       </div>

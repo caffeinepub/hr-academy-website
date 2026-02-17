@@ -5,7 +5,7 @@ import Principal "mo:core/Principal";
 import Order "mo:core/Order";
 import Runtime "mo:core/Runtime";
 import Text "mo:core/Text";
-
+import Time "mo:core/Time";
 
 import MixinAuthorization "authorization/MixinAuthorization";
 import Storage "blob-storage/Storage";
@@ -167,6 +167,20 @@ actor {
       contactText = "Get in touch with us today.";
     };
     isPreviewMode = false;
+  };
+
+  public type BuildInfo = {
+    build : Text;
+    timestamp : Int;
+  };
+
+  var buildInfo : BuildInfo = {
+    build = "v2.6.00021";
+    timestamp = 1_714_932_466_781_582_353;
+  };
+
+  public query ({ caller }) func getBuildInfo() : async BuildInfo {
+    buildInfo;
   };
 
   // User Profile Management

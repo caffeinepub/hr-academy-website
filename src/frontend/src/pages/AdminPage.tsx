@@ -10,11 +10,13 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useInternetIdentity } from '@/hooks/useInternetIdentity';
-import { useGetCallerUserProfile, useIsCallerAdmin, useAddOrUpdateCourse, useRemoveCourse, useAddOrUpdateGalleryImage, useRemoveGalleryImage, useUpdateContactInfo, useGetCourses, useGetGalleryImages, useGetContactInfo, useAddReviewImage, useRemoveReviewImage, useGetReviewImages, useGetAllSubmittedReviews, useDeleteReview, useGetHomePageContent, useUpdateHomePageContent, usePublishHomePageContent, useGetFeaturedGalleryImageIDs, useSetFeaturedGalleryImageIDs } from '@/hooks/useQueries';
+import { useGetCallerUserProfile, useIsCallerAdmin, useAddOrUpdateCourse, useRemoveCourse, useAddOrUpdateGalleryImage, useRemoveGalleryImage, useUpdateContactInfo, useGetCourses, useGetGalleryImages, useGetContactInfo, useAddReviewImage, useRemoveReviewImage, useGetReviewImages, useGetAllSubmittedReviews, useDeleteReview, useGetHomePageContent, useUpdateHomePageContent, usePublishHomePageContent, useGetFeaturedGalleryImageIDs, useSetFeaturedGalleryImageIDs, useGetBuildInfo } from '@/hooks/useQueries';
 import { CourseCategory, ExternalBlob } from '@/backend';
 import { toast } from 'sonner';
-import { Trash2, Plus, Upload, BookOpen, Image, Users, Settings, FileText, Eye, Save, CheckCircle, Star } from 'lucide-react';
+import { Trash2, Plus, Upload, BookOpen, Image, Users, Settings, FileText, Eye, Save, CheckCircle, Star, RefreshCw, AlertTriangle, Activity } from 'lucide-react';
 import { usePreviewMode } from '@/hooks/usePreviewMode';
+import { FRONTEND_BUILD_VERSION, FRONTEND_BUILD_TIMESTAMP, formatBuildTimestamp } from '@/constants/buildInfo';
+import { refreshPreview } from '@/utils/refreshPreview';
 
 export default function AdminPage() {
   const { identity } = useInternetIdentity();
@@ -29,6 +31,7 @@ export default function AdminPage() {
   const { data: submittedReviews = [] } = useGetAllSubmittedReviews();
   const { data: draftContent } = useGetHomePageContent(true);
   const { data: featuredImageIDs = [] } = useGetFeaturedGalleryImageIDs();
+  const { data: backendBuildInfo, isLoading: buildInfoLoading } = useGetBuildInfo();
 
   const addOrUpdateCourse = useAddOrUpdateCourse();
   const removeCourse = useRemoveCourse();
@@ -71,6 +74,7 @@ export default function AdminPage() {
   const [selectedFeaturedIDs, setSelectedFeaturedIDs] = useState<string[]>([]);
   const [galleryUploadProgress, setGalleryUploadProgress] = useState<number | null>(null);
   const [reviewUploadProgress, setReviewUploadProgress] = useState<number | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     if (contactInfo) {
@@ -294,6 +298,20 @@ export default function AdminPage() {
     }
   };
 
+  const handleRefreshPreview = async () => {
+    setIsRefreshing(true);
+    try {
+      await refreshPreview();
+    } catch (error) {
+      console.error('Refresh failed:', error);
+      setIsRefreshing(false);
+    }
+  };
+
+  // Check if frontend and backend versions match
+  const versionsMatch = backendBuildInfo?.build === FRONTEND_BUILD_VERSION;
+  const showVersionWarning = !buildInfoLoading && backendBuildInfo && !versionsMatch;
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black py-8">
       <div className="container max-w-6xl">
@@ -305,6 +323,96 @@ export default function AdminPage() {
             Welcome back, {userProfile?.name || 'Admin'}
           </p>
         </div>
+
+        {/* Build Diagnostics Section */}
+        <Card className="bg-gray-800 border-accent-red/20 mb-6">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center gap-2">
+              <Activity className="h-5 w-5 text-accent-red" />
+              Build Diagnostics
+            </CardTitle>
+            <CardDescription className="text-gray-400">
+              Frontend and backend version information
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid md:grid-cols-2 gap-4">
+              {/* Frontend Build Info */}
+              <div className="space-y-2">
+                <h3 className="text-sm font-semibold text-gray-300">Frontend</h3>
+                <div className="bg-gray-900 rounded-lg p-3 space-y-1">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Version:</span>
+                    <span className="text-white font-mono">{FRONTEND_BUILD_VERSION}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Built:</span>
+                    <span className="text-white text-xs">{formatBuildTimestamp(FRONTEND_BUILD_TIMESTAMP)}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Backend Build Info */}
+              <div className="space-y-2">
+                <h3 className="text-sm font-semibold text-gray-300">Backend</h3>
+                <div className="bg-gray-900 rounded-lg p-3 space-y-1">
+                  {buildInfoLoading ? (
+                    <p className="text-sm text-gray-400">Loading...</p>
+                  ) : backendBuildInfo ? (
+                    <>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">Version:</span>
+                        <span className="text-white font-mono">{backendBuildInfo.build}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-400">Built:</span>
+                        <span className="text-white text-xs">
+                          {formatBuildTimestamp(Number(backendBuildInfo.timestamp) / 1_000_000)}
+                        </span>
+                      </div>
+                    </>
+                  ) : (
+                    <p className="text-sm text-gray-400">Unable to fetch backend info</p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Version Status */}
+            {showVersionWarning ? (
+              <Alert className="bg-yellow-900/20 border-yellow-600/50">
+                <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                <AlertDescription className="text-yellow-200">
+                  <strong>Version mismatch detected.</strong> The frontend (v{FRONTEND_BUILD_VERSION}) and backend (v{backendBuildInfo?.build}) versions differ. 
+                  Your preview may be showing stale content. Try refreshing the page to load the latest version.
+                </AlertDescription>
+              </Alert>
+            ) : backendBuildInfo && versionsMatch ? (
+              <Alert className="bg-green-900/20 border-green-600/50">
+                <CheckCircle className="h-4 w-4 text-green-500" />
+                <AlertDescription className="text-green-200">
+                  <strong>Up to date.</strong> Frontend and backend versions match (v{FRONTEND_BUILD_VERSION}).
+                </AlertDescription>
+              </Alert>
+            ) : null}
+
+            {/* Refresh Action */}
+            <div className="pt-2">
+              <Button
+                onClick={handleRefreshPreview}
+                disabled={isRefreshing}
+                variant="outline"
+                className="w-full md:w-auto border-accent-red/50 text-white hover:bg-accent-red/10"
+              >
+                <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+                {isRefreshing ? 'Refreshing...' : 'Refresh Preview'}
+              </Button>
+              <p className="text-xs text-gray-500 mt-2">
+                Clears browser caches and reloads the page to ensure you're viewing the latest version.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
 
         <Tabs defaultValue="content" className="space-y-6">
           <TabsList className="bg-gray-800 border border-accent-red/20">
@@ -331,34 +439,15 @@ export default function AdminPage() {
           </TabsList>
 
           {/* Site Content Tab */}
-          <TabsContent value="content" className="space-y-6">
+          <TabsContent value="content">
             <Card className="bg-gray-800 border-accent-red/20">
               <CardHeader>
-                <CardTitle className="text-white">Edit Site Content</CardTitle>
+                <CardTitle className="text-white">Home Page Content</CardTitle>
                 <CardDescription className="text-gray-400">
-                  Update text content across your website pages
+                  Edit the main content sections of your home page
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="flex gap-4 mb-6">
-                  <Button
-                    onClick={() => enterPreview('/')}
-                    variant="outline"
-                    className="border-accent-red text-accent-red hover:bg-accent-red hover:text-white"
-                  >
-                    <Eye className="w-4 h-4 mr-2" />
-                    Preview Home
-                  </Button>
-                  <Button
-                    onClick={() => enterPreview('/contact')}
-                    variant="outline"
-                    className="border-accent-red text-accent-red hover:bg-accent-red hover:text-white"
-                  >
-                    <Eye className="w-4 h-4 mr-2" />
-                    Preview Contact
-                  </Button>
-                </div>
-
                 <div className="space-y-4">
                   <div>
                     <Label htmlFor="heroTitle" className="text-white">Hero Title</Label>
@@ -366,7 +455,7 @@ export default function AdminPage() {
                       id="heroTitle"
                       value={contentForm.heroTitle}
                       onChange={(e) => setContentForm({ ...contentForm, heroTitle: e.target.value })}
-                      className="bg-gray-700 border-gray-600 text-white"
+                      className="bg-gray-900 border-gray-700 text-white"
                     />
                   </div>
 
@@ -376,7 +465,7 @@ export default function AdminPage() {
                       id="heroSubtitle"
                       value={contentForm.heroSubtitle}
                       onChange={(e) => setContentForm({ ...contentForm, heroSubtitle: e.target.value })}
-                      className="bg-gray-700 border-gray-600 text-white"
+                      className="bg-gray-900 border-gray-700 text-white"
                     />
                   </div>
 
@@ -386,7 +475,8 @@ export default function AdminPage() {
                       id="missionStatement"
                       value={contentForm.missionStatement}
                       onChange={(e) => setContentForm({ ...contentForm, missionStatement: e.target.value })}
-                      className="bg-gray-700 border-gray-600 text-white min-h-[100px]"
+                      className="bg-gray-900 border-gray-700 text-white"
+                      rows={3}
                     />
                   </div>
 
@@ -396,7 +486,7 @@ export default function AdminPage() {
                       id="testimonialsHeading"
                       value={contentForm.testimonialsHeading}
                       onChange={(e) => setContentForm({ ...contentForm, testimonialsHeading: e.target.value })}
-                      className="bg-gray-700 border-gray-600 text-white"
+                      className="bg-gray-900 border-gray-700 text-white"
                     />
                   </div>
 
@@ -406,22 +496,24 @@ export default function AdminPage() {
                       id="aboutText"
                       value={contentForm.aboutText}
                       onChange={(e) => setContentForm({ ...contentForm, aboutText: e.target.value })}
-                      className="bg-gray-700 border-gray-600 text-white min-h-[100px]"
+                      className="bg-gray-900 border-gray-700 text-white"
+                      rows={2}
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="contactText" className="text-white">Contact Page Intro Text</Label>
+                    <Label htmlFor="contactText" className="text-white">Contact Text</Label>
                     <Textarea
                       id="contactText"
                       value={contentForm.contactText}
                       onChange={(e) => setContentForm({ ...contentForm, contactText: e.target.value })}
-                      className="bg-gray-700 border-gray-600 text-white min-h-[100px]"
+                      className="bg-gray-900 border-gray-700 text-white"
+                      rows={2}
                     />
                   </div>
                 </div>
 
-                <div className="flex gap-4 pt-4">
+                <div className="flex gap-3 pt-4">
                   <Button
                     onClick={handleSaveDraft}
                     disabled={updateHomePageContent.isPending}
@@ -431,12 +523,23 @@ export default function AdminPage() {
                     {updateHomePageContent.isPending ? 'Saving...' : 'Save Draft'}
                   </Button>
                   <Button
+                    onClick={() => {
+                      enterPreview();
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    variant="outline"
+                    className="border-accent-red/50 text-white hover:bg-accent-red/10"
+                  >
+                    <Eye className="w-4 h-4 mr-2" />
+                    Preview Changes
+                  </Button>
+                  <Button
                     onClick={handlePublish}
                     disabled={publishHomePageContent.isPending}
                     className="bg-accent-red hover:bg-accent-red-dark text-white"
                   >
                     <CheckCircle className="w-4 h-4 mr-2" />
-                    {publishHomePageContent.isPending ? 'Publishing...' : 'Publish'}
+                    {publishHomePageContent.isPending ? 'Publishing...' : 'Publish Live'}
                   </Button>
                 </div>
               </CardContent>
@@ -444,15 +547,15 @@ export default function AdminPage() {
           </TabsContent>
 
           {/* Courses Tab */}
-          <TabsContent value="courses" className="space-y-6">
+          <TabsContent value="courses">
             <Card className="bg-gray-800 border-accent-red/20">
               <CardHeader>
-                <CardTitle className="text-white">Add/Edit Course</CardTitle>
+                <CardTitle className="text-white">Manage Courses</CardTitle>
                 <CardDescription className="text-gray-400">
-                  Create or update course information
+                  Add, edit, or remove courses from your academy
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-6">
                 <form onSubmit={handleAddCourse} className="space-y-4">
                   <div>
                     <Label htmlFor="courseName" className="text-white">Course Name</Label>
@@ -460,7 +563,7 @@ export default function AdminPage() {
                       id="courseName"
                       value={courseForm.name}
                       onChange={(e) => setCourseForm({ ...courseForm, name: e.target.value })}
-                      className="bg-gray-700 border-gray-600 text-white"
+                      className="bg-gray-900 border-gray-700 text-white"
                       required
                     />
                   </div>
@@ -471,10 +574,10 @@ export default function AdminPage() {
                       value={courseForm.category}
                       onValueChange={(value) => setCourseForm({ ...courseForm, category: value as CourseCategory })}
                     >
-                      <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                      <SelectTrigger className="bg-gray-900 border-gray-700 text-white">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent className="bg-gray-700 border-gray-600">
+                      <SelectContent className="bg-gray-900 border-gray-700">
                         <SelectItem value="Intermediate">Intermediate</SelectItem>
                         <SelectItem value="Engineering">Engineering</SelectItem>
                         <SelectItem value="Pharmacy">Pharmacy</SelectItem>
@@ -489,7 +592,8 @@ export default function AdminPage() {
                       id="courseDescription"
                       value={courseForm.description}
                       onChange={(e) => setCourseForm({ ...courseForm, description: e.target.value })}
-                      className="bg-gray-700 border-gray-600 text-white"
+                      className="bg-gray-900 border-gray-700 text-white"
+                      rows={3}
                       required
                     />
                   </div>
@@ -503,35 +607,33 @@ export default function AdminPage() {
                     {addOrUpdateCourse.isPending ? 'Saving...' : 'Add Course'}
                   </Button>
                 </form>
-              </CardContent>
-            </Card>
 
-            <Card className="bg-gray-800 border-accent-red/20">
-              <CardHeader>
-                <CardTitle className="text-white">Existing Courses</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {courses.map((course) => (
-                    <div key={course.id} className="flex items-start justify-between p-4 bg-gray-700 rounded-lg">
-                      <div className="flex-1">
-                        <h3 className="text-white font-semibold">{course.name}</h3>
-                        <p className="text-gray-400 text-sm">{course.category}</p>
-                        <p className="text-gray-300 text-sm mt-2">{course.description}</p>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleRemoveCourse(course.id)}
-                        disabled={removeCourse.isPending}
-                        className="text-accent-red hover:bg-accent-red/20"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                <div className="space-y-3">
+                  <h3 className="text-lg font-semibold text-white">Existing Courses</h3>
+                  {courses.length === 0 ? (
+                    <p className="text-gray-400">No courses added yet.</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {courses.map((course) => (
+                        <div
+                          key={course.id}
+                          className="flex items-center justify-between bg-gray-900 p-4 rounded-lg"
+                        >
+                          <div>
+                            <h4 className="text-white font-medium">{course.name}</h4>
+                            <p className="text-sm text-gray-400">{course.category}</p>
+                          </div>
+                          <Button
+                            onClick={() => handleRemoveCourse(course.id)}
+                            variant="ghost"
+                            size="sm"
+                            className="text-red-400 hover:text-red-300 hover:bg-red-900/20"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                  {courses.length === 0 && (
-                    <p className="text-gray-400 text-center py-8">No courses added yet</p>
                   )}
                 </div>
               </CardContent>
@@ -539,125 +641,80 @@ export default function AdminPage() {
           </TabsContent>
 
           {/* Gallery Tab */}
-          <TabsContent value="gallery" className="space-y-6">
+          <TabsContent value="gallery">
             <Card className="bg-gray-800 border-accent-red/20">
               <CardHeader>
-                <CardTitle className="text-white">Upload Gallery Images</CardTitle>
+                <CardTitle className="text-white">Gallery Management</CardTitle>
                 <CardDescription className="text-gray-400">
-                  Add images to your gallery
+                  Upload and manage gallery images. Select up to 4 images to feature on the home page.
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <Label htmlFor="galleryUpload" className="cursor-pointer">
-                    <div className="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center hover:border-accent-red transition-colors">
-                      <Upload className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-                      <p className="text-white mb-2">Click to upload images</p>
-                      <p className="text-gray-400 text-sm">Supports multiple files</p>
-                    </div>
-                    <Input
-                      id="galleryUpload"
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      onChange={handleGalleryUpload}
-                      className="hidden"
-                    />
-                  </Label>
-
+              <CardContent className="space-y-6">
+                <div>
+                  <Label htmlFor="galleryUpload" className="text-white">Upload Images</Label>
+                  <Input
+                    id="galleryUpload"
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleGalleryUpload}
+                    className="bg-gray-900 border-gray-700 text-white"
+                  />
                   {galleryUploadProgress !== null && (
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm text-gray-400">
-                        <span>Uploading...</span>
-                        <span>{Math.round(galleryUploadProgress)}%</span>
-                      </div>
-                      <Progress value={galleryUploadProgress} className="bg-gray-700" />
+                    <div className="mt-2">
+                      <Progress value={galleryUploadProgress} className="h-2" />
+                      <p className="text-sm text-gray-400 mt-1">{galleryUploadProgress}% uploaded</p>
                     </div>
                   )}
                 </div>
-              </CardContent>
-            </Card>
 
-            <Card className="bg-gray-800 border-accent-red/20">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-white">Gallery Images</CardTitle>
-                    <CardDescription className="text-gray-400 mt-2">
-                      Select up to 4 images to feature on the home page
-                    </CardDescription>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold text-white">Gallery Images</h3>
+                    <Button
+                      onClick={handleSaveFeaturedImages}
+                      disabled={setFeaturedGalleryImageIDs.isPending}
+                      size="sm"
+                      className="bg-accent-red hover:bg-accent-red-dark text-white"
+                    >
+                      <Save className="w-4 h-4 mr-2" />
+                      {setFeaturedGalleryImageIDs.isPending ? 'Saving...' : 'Save Featured'}
+                    </Button>
                   </div>
-                  <Button
-                    onClick={handleSaveFeaturedImages}
-                    disabled={setFeaturedGalleryImageIDs.isPending}
-                    className="bg-accent-red hover:bg-accent-red-dark text-white"
-                  >
-                    <Save className="w-4 h-4 mr-2" />
-                    {setFeaturedGalleryImageIDs.isPending ? 'Saving...' : 'Save Featured'}
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {selectedFeaturedIDs.length > 0 && (
-                  <Alert className="mb-4 bg-accent-red/10 border-accent-red/30">
-                    <AlertDescription className="text-white">
-                      {selectedFeaturedIDs.length} of 4 images selected for home page
-                    </AlertDescription>
-                  </Alert>
-                )}
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {galleryImages.map((image) => {
-                    const isFeatured = selectedFeaturedIDs.includes(image.id);
-                    const canSelect = selectedFeaturedIDs.length < 4 || isFeatured;
-
-                    return (
-                      <div key={image.id} className="relative group">
-                        <div className="relative overflow-hidden rounded-lg border-2 border-gray-700 hover:border-accent-red transition-colors">
+                  {galleryImages.length === 0 ? (
+                    <p className="text-gray-400">No images uploaded yet.</p>
+                  ) : (
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      {galleryImages.map((image) => (
+                        <div key={image.id} className="relative group">
                           <img
                             src={image.image.getDirectURL()}
                             alt={image.caption}
-                            className="w-full aspect-square object-cover"
+                            className="w-full h-48 object-cover rounded-lg"
                           />
-                          <div className="absolute top-2 right-2 flex gap-2">
-                            <div
-                              className={`flex items-center gap-2 bg-black/70 rounded px-2 py-1 ${
-                                !canSelect ? 'opacity-50' : ''
-                              }`}
-                            >
+                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex flex-col items-center justify-center gap-2">
+                            <div className="flex items-center gap-2 bg-gray-900 px-3 py-2 rounded">
                               <Checkbox
                                 id={`featured-${image.id}`}
-                                checked={isFeatured}
+                                checked={selectedFeaturedIDs.includes(image.id)}
                                 onCheckedChange={(checked) => handleToggleFeatured(image.id, checked as boolean)}
-                                disabled={!canSelect}
-                                className="border-white data-[state=checked]:bg-accent-red data-[state=checked]:border-accent-red"
                               />
-                              <Label
-                                htmlFor={`featured-${image.id}`}
-                                className="text-white text-xs cursor-pointer"
-                              >
+                              <Label htmlFor={`featured-${image.id}`} className="text-white text-sm cursor-pointer">
                                 Featured
                               </Label>
                             </div>
                             <Button
-                              variant="ghost"
-                              size="icon"
                               onClick={() => handleRemoveGalleryImage(image.id)}
-                              disabled={removeGalleryImage.isPending}
-                              className="bg-black/70 hover:bg-accent-red text-white h-8 w-8"
+                              variant="destructive"
+                              size="sm"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              <Trash2 className="w-4 h-4 mr-1" />
+                              Remove
                             </Button>
                           </div>
-                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
-                            <p className="text-white text-xs truncate">{image.caption}</p>
-                          </div>
+                          <p className="text-xs text-gray-400 mt-1 truncate">{image.caption}</p>
                         </div>
-                      </div>
-                    );
-                  })}
-                  {galleryImages.length === 0 && (
-                    <div className="col-span-full text-center py-12">
-                      <p className="text-gray-400">No images uploaded yet</p>
+                      ))}
                     </div>
                   )}
                 </div>
@@ -666,151 +723,128 @@ export default function AdminPage() {
           </TabsContent>
 
           {/* Reviews Tab */}
-          <TabsContent value="reviews" className="space-y-6">
-            <Card className="bg-gray-800 border-accent-red/20">
-              <CardHeader>
-                <CardTitle className="text-white">Upload Review Screenshots</CardTitle>
-                <CardDescription className="text-gray-400">
-                  Add screenshots of student reviews
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <Label htmlFor="reviewUpload" className="cursor-pointer">
-                    <div className="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center hover:border-accent-red transition-colors">
-                      <Upload className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-                      <p className="text-white mb-2">Click to upload review screenshots</p>
-                      <p className="text-gray-400 text-sm">Supports multiple files</p>
-                    </div>
+          <TabsContent value="reviews">
+            <div className="space-y-6">
+              <Card className="bg-gray-800 border-accent-red/20">
+                <CardHeader>
+                  <CardTitle className="text-white">Review Screenshots</CardTitle>
+                  <CardDescription className="text-gray-400">
+                    Upload screenshots of reviews from social media or other platforms
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div>
+                    <Label htmlFor="reviewUpload" className="text-white">Upload Review Images</Label>
                     <Input
                       id="reviewUpload"
                       type="file"
                       accept="image/*"
                       multiple
                       onChange={handleReviewUpload}
-                      className="hidden"
+                      className="bg-gray-900 border-gray-700 text-white"
                     />
-                  </Label>
-
-                  {reviewUploadProgress !== null && (
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm text-gray-400">
-                        <span>Uploading...</span>
-                        <span>{Math.round(reviewUploadProgress)}%</span>
+                    {reviewUploadProgress !== null && (
+                      <div className="mt-2">
+                        <Progress value={reviewUploadProgress} className="h-2" />
+                        <p className="text-sm text-gray-400 mt-1">{reviewUploadProgress}% uploaded</p>
                       </div>
-                      <Progress value={reviewUploadProgress} className="bg-gray-700" />
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+                    )}
+                  </div>
 
-            <Card className="bg-gray-800 border-accent-red/20">
-              <CardHeader>
-                <CardTitle className="text-white">Review Screenshots</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {reviewImages.map((image) => (
-                    <div key={image.id} className="relative group">
-                      <div className="relative overflow-hidden rounded-lg border border-gray-700">
-                        <img
-                          src={image.image.getDirectURL()}
-                          alt={image.caption}
-                          className="w-full aspect-square object-cover"
-                        />
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleRemoveReviewImage(image.id)}
-                          disabled={removeReviewImage.isPending}
-                          className="absolute top-2 right-2 bg-black/70 hover:bg-accent-red text-white"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                  {reviewImages.length === 0 && (
-                    <div className="col-span-full text-center py-12">
-                      <p className="text-gray-400">No review screenshots uploaded yet</p>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gray-800 border-accent-red/20">
-              <CardHeader>
-                <CardTitle className="text-white">Submitted Reviews</CardTitle>
-                <CardDescription className="text-gray-400">
-                  Reviews submitted by users
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {submittedReviews.map((review) => (
-                    <div key={review.id} className="flex items-start justify-between p-4 bg-gray-700 rounded-lg">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <h3 className="text-white font-semibold">{review.name || 'Anonymous'}</h3>
-                          <div className="flex">
-                            {Array.from({ length: Number(review.rating) }).map((_, i) => (
-                              <Star key={i} className="w-4 h-4 fill-accent-red text-accent-red" />
-                            ))}
+                  <div className="space-y-3">
+                    <h3 className="text-lg font-semibold text-white">Uploaded Reviews</h3>
+                    {reviewImages.length === 0 ? (
+                      <p className="text-gray-400">No review images uploaded yet.</p>
+                    ) : (
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        {reviewImages.map((review) => (
+                          <div key={review.id} className="relative group">
+                            <img
+                              src={review.image.getDirectURL()}
+                              alt={review.caption}
+                              className="w-full h-48 object-cover rounded-lg"
+                            />
+                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                              <Button
+                                onClick={() => handleRemoveReviewImage(review.id)}
+                                variant="destructive"
+                                size="sm"
+                              >
+                                <Trash2 className="w-4 h-4 mr-1" />
+                                Remove
+                              </Button>
+                            </div>
                           </div>
-                        </div>
-                        <p className="text-gray-300 text-sm">{review.content}</p>
+                        ))}
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDeleteReview(review.id)}
-                        disabled={deleteReview.isPending}
-                        className="text-accent-red hover:bg-accent-red/20"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gray-800 border-accent-red/20">
+                <CardHeader>
+                  <CardTitle className="text-white">User Submitted Reviews</CardTitle>
+                  <CardDescription className="text-gray-400">
+                    Reviews submitted by users through the website
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {submittedReviews.length === 0 ? (
+                    <p className="text-gray-400">No user reviews submitted yet.</p>
+                  ) : (
+                    <div className="space-y-3">
+                      {submittedReviews.map((review) => (
+                        <div
+                          key={review.id}
+                          className="bg-gray-900 p-4 rounded-lg flex items-start justify-between"
+                        >
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <p className="text-white font-medium">{review.name || 'Anonymous'}</p>
+                              <div className="flex">
+                                {Array.from({ length: Number(review.rating) }).map((_, i) => (
+                                  <Star key={i} className="w-4 h-4 fill-yellow-500 text-yellow-500" />
+                                ))}
+                              </div>
+                            </div>
+                            <p className="text-gray-400 text-sm">{review.content}</p>
+                          </div>
+                          <Button
+                            onClick={() => handleDeleteReview(review.id)}
+                            variant="ghost"
+                            size="sm"
+                            className="text-red-400 hover:text-red-300 hover:bg-red-900/20"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                  {submittedReviews.length === 0 && (
-                    <p className="text-gray-400 text-center py-8">No reviews submitted yet</p>
                   )}
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           {/* Contact Info Tab */}
-          <TabsContent value="contact" className="space-y-6">
+          <TabsContent value="contact">
             <Card className="bg-gray-800 border-accent-red/20">
               <CardHeader>
-                <CardTitle className="text-white">Update Contact Information</CardTitle>
+                <CardTitle className="text-white">Contact Information</CardTitle>
                 <CardDescription className="text-gray-400">
-                  Manage your academy's contact details
+                  Update your academy's contact details
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleUpdateContactInfo} className="space-y-4">
                   <div>
-                    <Label htmlFor="ownerName" className="text-white">Owner Name</Label>
-                    <Input
-                      id="ownerName"
-                      value={contactForm.ownerName}
-                      onChange={(e) => setContactForm({ ...contactForm, ownerName: e.target.value })}
-                      className="bg-gray-700 border-gray-600 text-white"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="phone" className="text-white">Phone</Label>
+                    <Label htmlFor="phone" className="text-white">Phone Number</Label>
                     <Input
                       id="phone"
                       value={contactForm.phone}
                       onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
-                      className="bg-gray-700 border-gray-600 text-white"
-                      required
+                      className="bg-gray-900 border-gray-700 text-white"
                     />
                   </div>
 
@@ -821,17 +855,7 @@ export default function AdminPage() {
                       type="email"
                       value={contactForm.email}
                       onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
-                      className="bg-gray-700 border-gray-600 text-white"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="whatsapp" className="text-white">WhatsApp</Label>
-                    <Input
-                      id="whatsapp"
-                      value={contactForm.whatsapp}
-                      onChange={(e) => setContactForm({ ...contactForm, whatsapp: e.target.value })}
-                      className="bg-gray-700 border-gray-600 text-white"
+                      className="bg-gray-900 border-gray-700 text-white"
                     />
                   </div>
 
@@ -841,23 +865,45 @@ export default function AdminPage() {
                       id="instagram"
                       value={contactForm.instagram}
                       onChange={(e) => setContactForm({ ...contactForm, instagram: e.target.value })}
-                      className="bg-gray-700 border-gray-600 text-white"
-                      required
+                      className="bg-gray-900 border-gray-700 text-white"
+                      placeholder="@your_handle"
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="facebook" className="text-white">Facebook</Label>
+                    <Label htmlFor="facebook" className="text-white">Facebook URL</Label>
                     <Input
                       id="facebook"
                       value={contactForm.facebook}
                       onChange={(e) => setContactForm({ ...contactForm, facebook: e.target.value })}
-                      className="bg-gray-700 border-gray-600 text-white"
+                      className="bg-gray-900 border-gray-700 text-white"
+                      placeholder="https://facebook.com/..."
                     />
                   </div>
 
                   <div>
-                    <Label className="text-white">Branch Addresses</Label>
+                    <Label htmlFor="whatsapp" className="text-white">WhatsApp URL</Label>
+                    <Input
+                      id="whatsapp"
+                      value={contactForm.whatsapp}
+                      onChange={(e) => setContactForm({ ...contactForm, whatsapp: e.target.value })}
+                      className="bg-gray-900 border-gray-700 text-white"
+                      placeholder="https://wa.me/..."
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="ownerName" className="text-white">Owner/Founder Name</Label>
+                    <Input
+                      id="ownerName"
+                      value={contactForm.ownerName}
+                      onChange={(e) => setContactForm({ ...contactForm, ownerName: e.target.value })}
+                      className="bg-gray-900 border-gray-700 text-white"
+                    />
+                  </div>
+
+                  <div>
+                    <Label className="text-white">Branch Locations</Label>
                     {contactForm.branches.map((branch, index) => (
                       <Input
                         key={index}
@@ -867,11 +913,20 @@ export default function AdminPage() {
                           newBranches[index] = e.target.value;
                           setContactForm({ ...contactForm, branches: newBranches });
                         }}
-                        className="bg-gray-700 border-gray-600 text-white mt-2"
+                        className="bg-gray-900 border-gray-700 text-white mb-2"
                         placeholder={`Branch ${index + 1} address`}
-                        required
                       />
                     ))}
+                    <Button
+                      type="button"
+                      onClick={() => setContactForm({ ...contactForm, branches: [...contactForm.branches, ''] })}
+                      variant="outline"
+                      size="sm"
+                      className="mt-2 border-accent-red/50 text-white hover:bg-accent-red/10"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Branch
+                    </Button>
                   </div>
 
                   <Button
@@ -879,7 +934,8 @@ export default function AdminPage() {
                     disabled={updateContactInfo.isPending}
                     className="bg-accent-red hover:bg-accent-red-dark text-white"
                   >
-                    {updateContactInfo.isPending ? 'Updating...' : 'Update Contact Info'}
+                    <Save className="w-4 h-4 mr-2" />
+                    {updateContactInfo.isPending ? 'Saving...' : 'Save Contact Info'}
                   </Button>
                 </form>
               </CardContent>

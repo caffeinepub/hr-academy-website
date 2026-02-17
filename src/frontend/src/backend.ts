@@ -89,6 +89,10 @@ export class ExternalBlob {
         return this;
     }
 }
+export interface BuildInfo {
+    timestamp: bigint;
+    build: string;
+}
 export interface HomePageContent {
     missionStatement: string;
     contactText: string;
@@ -174,6 +178,7 @@ export interface backendInterface {
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     deleteReview(id: string): Promise<void>;
     getAllSubmittedReviews(): Promise<Array<SubmittedReview>>;
+    getBuildInfo(): Promise<BuildInfo>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getContactInfo(): Promise<ContactInfo>;
@@ -381,6 +386,20 @@ export class Backend implements backendInterface {
         } else {
             const result = await this.actor.getAllSubmittedReviews();
             return from_candid_vec_n13(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getBuildInfo(): Promise<BuildInfo> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getBuildInfo();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getBuildInfo();
+            return result;
         }
     }
     async getCallerUserProfile(): Promise<UserProfile | null> {

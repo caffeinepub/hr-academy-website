@@ -1,49 +1,103 @@
 {
   "kind": "build_request",
-  "title": "Remove the homepage CTA section ('Ready to Start Your Journey?')",
-  "projectName": "HR Academy",
+  "title": "Add build/version diagnostics to resolve preview vs deployed version confusion",
+  "projectName": "HR ACADEMY",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-10",
-      "text": "Remove the Home page call-to-action section that contains the heading \"Ready to Start Your Journey?\" (including its supporting paragraph and the \"Contact Us Today\" button) so that this section no longer appears anywhere on the site UI.",
-      "target": "frontend",
+      "id": "REQ-1",
+      "text": "Add a backend build-info query endpoint that returns a small, human-readable build identifier (e.g., version string) and build timestamp so the frontend can verify which backend canister code is currently running.",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-1",
+          "msg-2"
         ],
         "quotes": [
-          "Remove the \"Ready to start your journey\" part"
+          "The version I am seeing on my right is not version 41",
+          "Yes please"
         ]
       },
       "acceptanceCriteria": [
-        "On the Home page, the CTA section with the heading \"Ready to Start Your Journey?\" is no longer rendered.",
-        "The paragraph \"Join thousands of successful students who have achieved their academic goals with HR Academy\" is no longer visible on the Home page.",
-        "The \"Contact Us Today\" button from that CTA section is no longer visible on the Home page.",
-        "The Home page layout remains valid and the footer still appears immediately after the preceding content (currently the Reviews section) with no blank/empty CTA area."
+        "Backend exposes a public query method that returns at least: buildVersion (Text) and buildTimestamp (Text).",
+        "The returned values are stable and do not depend on caller identity.",
+        "If the canister is upgraded, the build identifier can be updated in code and will be reflected in the endpoint response after deployment."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Add a frontend build-info value (build version + build timestamp) embedded at build time, and display it in the UI so users/admins can confirm whether the preview pane is showing the latest frontend bundle.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1",
+          "msg-2"
+        ],
+        "quotes": [
+          "The version I am seeing on my right is not version 41",
+          "Yes please"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Frontend has a single source of truth for the frontend buildVersion and buildTimestamp (e.g., constants) that can be shown in the UI.",
+        "Footer (or another always-visible location) displays the frontend buildVersion/buildTimestamp in a subtle, non-distracting way.",
+        "Admin page displays the frontend buildVersion/buildTimestamp in a clearly labeled 'Diagnostics' or 'Build Info' area."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "In the Admin dashboard, add a 'Diagnostics' section that fetches and displays the backend build info and highlights whether the backend build info matches the frontend build info (to help diagnose stale previews/caching).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1",
+          "msg-2"
+        ],
+        "quotes": [
+          "The version I am seeing on my right is not version 41",
+          "Yes please"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Admin dashboard shows backend buildVersion/buildTimestamp fetched from the new backend query endpoint.",
+        "Admin dashboard shows frontend buildVersion/buildTimestamp next to the backend values.",
+        "If frontend and backend buildVersion differ, the UI shows a clear warning message explaining that the preview may be stale and recommending a refresh.",
+        "If they match, the UI shows a clear 'up-to-date' status."
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Add a user-facing 'Refresh preview' action that helps the user force an update when the right-side preview is stale (e.g., a button that reloads the page and optionally clears browser caches where possible).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1",
+          "msg-2"
+        ],
+        "quotes": [
+          "The version I am seeing on my right is not version 41",
+          "Yes please"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The app provides a visible 'Refresh' action accessible to admins (at minimum on the Admin page Diagnostics section).",
+        "Clicking the action triggers a full page reload.",
+        "If available in the browser, the action attempts to clear relevant caches (best-effort) before reloading, without breaking normal navigation if cache APIs are unavailable."
       ]
     }
   ],
   "constraints": [
-    "Do not modify any files under frontend/src/components/ui (Shadcn components).",
-    "Keep the existing Contact Us scroll-to-footer behavior unchanged wherever it remains in the UI."
+    "Backend must remain a single Motoko actor in backend/main.mo; only introduce migration.mo if state upgrades require it.",
+    "Do not edit files under frontend/src/components/ui or any paths listed in frontend.immutablePaths (compose existing components instead).",
+    "Use English for all user-facing text."
   ],
   "nonGoals": [
-    "Do not change any backend data models or homepage content storage for this request.",
-    "Do not change the hero section, gallery section, reviews section, or footer content other than removing the specified CTA section."
+    "Creating or updating SEO/SSL/public-launch documentation content.",
+    "Adding third-party analytics, Search Console integrations, or external hosting/domain automation.",
+    "Changing core site content (courses, gallery, contact info) unrelated to diagnosing version/deployment mismatches."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
-  },
-  "userProfileUpdate": {
-    "goalsToAdd": [],
-    "goalsToRemove": [],
-    "preferencesToAdd": [],
-    "preferencesToRemove": [],
-    "miscToAdd": [],
-    "miscToRemove": [],
-    "fieldsToSet": {},
-    "fieldsToDelete": []
   }
 }

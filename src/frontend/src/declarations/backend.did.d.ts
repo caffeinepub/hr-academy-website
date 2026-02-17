@@ -10,6 +10,7 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export interface BuildInfo { 'timestamp' : bigint, 'build' : string }
 export interface ContactInfo {
   'ownerName' : string,
   'instagram' : string,
@@ -104,6 +105,7 @@ export interface _SERVICE {
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'deleteReview' : ActorMethod<[string], undefined>,
   'getAllSubmittedReviews' : ActorMethod<[], Array<SubmittedReview>>,
+  'getBuildInfo' : ActorMethod<[], BuildInfo>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getContactInfo' : ActorMethod<[], ContactInfo>,
